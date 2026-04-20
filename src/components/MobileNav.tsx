@@ -3,25 +3,25 @@ import "./MobileNav.css";
 
 function MobileNav() {
   return (
-    <div className="mobile-nav flex justify-between w-full p-8 rounded-t-3xl">
+    <div className="mobile-nav flex justify-between w-full p-8 pb-6 rounded-t-3xl">
       <Link to="/">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 15 15"
           fill="currentColor"
-          className="size-12"
+          className="size-7"
         >
           <path d="M8.543 2.232a.75.75 0 0 0-1.085 0l-5.25 5.5A.75.75 0 0 0 2.75 9H4v4a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-1a1 1 0 1 1 2 0v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1V9h1.25a.75.75 0 0 0 .543-1.268l-5.25-5.5Z" />
         </svg>
       </Link>
-      <Link to="series">
+      <Link to="/series">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
           strokeWidth={1.5}
           stroke="currentColor"
-          className="size-12"
+          className="size-7"
         >
           <path
             strokeLinecap="round"
@@ -37,7 +37,7 @@ function MobileNav() {
           viewBox="0 0 24 24"
           strokeWidth={1.5}
           stroke="currentColor"
-          className="size-12"
+          className="size-7"
         >
           <path
             strokeLinecap="round"
@@ -53,7 +53,7 @@ function MobileNav() {
           viewBox="0 0 24 24"
           strokeWidth={1.5}
           stroke="currentColor"
-          className="size-12"
+          className="size-7"
         >
           <path
             strokeLinecap="round"
