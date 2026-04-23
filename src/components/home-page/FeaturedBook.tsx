@@ -12,7 +12,7 @@ function FeaturedBook() {
     <div className='mt-10'>
       <h2 className='text-3xl text-left mb-2 font-bold'>Book of the Day</h2>
 
-      <div className='bg-gray-200 rounded-xl text-center py-4'>
+      <div className='bg-gray-100 rounded-xl text-center py-4 shadow'>
         <div className='py-4'>
           <img
             className="featured-book__cover ml-3 mx-auto inline-block rounded-2xl"

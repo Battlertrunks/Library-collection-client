@@ -10,7 +10,7 @@ function BooksWidget(props: Props) {
   const { title, author, completionAmount } = props;
 
   return (
-    <div className="mt-4 books-widget bg-gray-200 py-3 rounded-xl">
+    <div className="mt-4 books-widget bg-gray-100 shadow py-3 rounded-xl">
       <div className="flex flex-row justify-items-start">
         <img
           className="books-widget__cover ml-3 rounded-xl"
