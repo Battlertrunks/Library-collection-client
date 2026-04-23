@@ -1,5 +1,6 @@
 import ProgressChart from "./ProgressChart";
 import BooksWidget from "./BooksWidget";
+import FeaturedBook from "./FeaturedBook";
 
 const HomePage = () => {
   const progressItems = [
@@ -8,6 +9,8 @@ const HomePage = () => {
     { title: "Upcoming Releases", author: "Alice", completionAmount: 20 },
   ];
 
+  // TODO: Should there be animation effects in this project?
+
   return (
     <div className="text-center pb-26 px-10 pt-7 text-face scroll-auto overflow-scroll">
       <h2 className="text-3xl font-bold mb-2 text-gray-900">Hey there,</h2>
@@ -15,7 +18,7 @@ const HomePage = () => {
 
       {/* Wrapper to center the text over the SVG */}
       <div style={{ position: "relative", width: 280, height: 280, margin: "0 auto" }}>
-        <ProgressChart percentage={0.20} size={280} strokeWidth={8} startAngle={90} />
+        <ProgressChart percentage={0.52} size={280} strokeWidth={8} startAngle={90} />
 
         {/* Text Overlay */}
         <div style={{
@@ -34,6 +37,8 @@ const HomePage = () => {
         </div>
       </div>
 
+      <hr className="mt-10 bg-gray-800"/>
+
       {/* Progress so far section */}
       <section className="mt-10">
         <h2 className="text-3xl font-bold mb-2 text-gray-900 text-left">
@@ -50,6 +55,13 @@ const HomePage = () => {
             </li>
           )) }
         </ul>
+      </section>
+
+      <hr className="mt-10 bg-gray-800"/>
+
+      {/* Book of the Day*/}
+      <section>
+        <FeaturedBook />
       </section>
     </div>
   );
