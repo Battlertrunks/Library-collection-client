@@ -1,6 +1,7 @@
 import ProgressChart from "./ProgressChart";
 import BooksWidget from "./BooksWidget";
 import FeaturedBook from "./FeaturedBook";
+import "./HomePage.css";
 
 const HomePage = () => {
   const progressItems = [
