@@ -11,7 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SeriesRouteImport } from './routes/series'
 import { Route as SearchRouteImport } from './routes/search'
-import { Route as CollectedRouteImport } from './routes/collected'
+import { Route as LibraryRouteImport } from './routes/library'
 import { Route as IndexRouteImport } from './routes/index'
 
 const SeriesRoute = SeriesRouteImport.update({
@@ -24,9 +24,9 @@ const SearchRoute = SearchRouteImport.update({
   path: '/search',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CollectedRoute = CollectedRouteImport.update({
-  id: '/collected',
-  path: '/collected',
+const LibraryRoute = LibraryRouteImport.update({
+  id: '/library',
+  path: '/library',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -37,34 +37,34 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/collected': typeof CollectedRoute
+  '/library': typeof LibraryRoute
   '/search': typeof SearchRoute
   '/series': typeof SeriesRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/collected': typeof CollectedRoute
+  '/library': typeof LibraryRoute
   '/search': typeof SearchRoute
   '/series': typeof SeriesRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/collected': typeof CollectedRoute
+  '/library': typeof LibraryRoute
   '/search': typeof SearchRoute
   '/series': typeof SeriesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/collected' | '/search' | '/series'
+  fullPaths: '/' | '/library' | '/search' | '/series'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/collected' | '/search' | '/series'
-  id: '__root__' | '/' | '/collected' | '/search' | '/series'
+  to: '/' | '/library' | '/search' | '/series'
+  id: '__root__' | '/' | '/library' | '/search' | '/series'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  CollectedRoute: typeof CollectedRoute
+  LibraryRoute: typeof LibraryRoute
   SearchRoute: typeof SearchRoute
   SeriesRoute: typeof SeriesRoute
 }
@@ -85,11 +85,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SearchRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/collected': {
-      id: '/collected'
-      path: '/collected'
-      fullPath: '/collected'
-      preLoaderRoute: typeof CollectedRouteImport
+    '/library': {
+      id: '/library'
+      path: '/library'
+      fullPath: '/library'
+      preLoaderRoute: typeof LibraryRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -104,7 +104,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  CollectedRoute: CollectedRoute,
+  LibraryRoute: LibraryRoute,
   SearchRoute: SearchRoute,
   SeriesRoute: SeriesRoute,
 }
