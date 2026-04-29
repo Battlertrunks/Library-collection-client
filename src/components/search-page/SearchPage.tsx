@@ -1,6 +1,10 @@
+import { useState } from "react";
 import "./SearchPage.css";
 
 function SearchPage() {
+  // TODO: Make a type for the books on this page...
+  const [results, setResults]: unknown = useState([]);
+
   return (
     <div>
       <div className="mb-10 pt-7 text-center">
@@ -16,9 +20,9 @@ function SearchPage() {
             <input
               type="text"
               placeholder="Looking for..."
-              className="bg-gray-100 search-inp py-2 pl-2 rounded-xl"
+              className="bg-gray-100 search-inp py-2 pl-2 mr-4 rounded-xl"
             />
-            <button>
+            <button className="bg-gray-100 py-2 px-4 rounded-xl">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -36,6 +40,13 @@ function SearchPage() {
             </button>
           </div>
           <p className="text-xs">* Results come from Google Books API</p>
+        </div>
+
+        {/* Results! TODO: This should be proper pagination using Cursor-based pagination */}
+        <div className="mt-9">
+          <div className="text-right text-sm font-bold">
+            <p>{ results.length } Results Found</p>
+          </div>
         </div>
       </div>
     </div>
