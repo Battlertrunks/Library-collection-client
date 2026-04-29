@@ -6,8 +6,10 @@ function Series() {
 
   return (
     <div className="text-center">
-      <h2 className="text-3xl font-bold text-gray-900">Your Crafted</h2>
-      <h2 className="text-3xl font-bold mb-25 text-gray-900">Groups</h2>
+      <div className="mb-15 pt-7">
+        <h2>Your Crafted</h2>
+        <h2>Groups</h2>
+      </div>
 
       {/* If no custom series are stored */}
       <div className="border-gray-900 text-gray-500 h-52 mx-9 rounded-2xl border-dashed border-2 flex flex-col items-center justify-center">

@@ -17,8 +17,10 @@ const HomePage = () => {
   return (
     <div className="text-center pb-26 px-10 pt-7 text-face scroll-auto overflow-scroll">
       <div className="flex flex-col justify-center items-center">
-        <h2 className="text-3xl font-bold mb-2 text-gray-900">Hey there,</h2>
-        <h2 className="text-3xl font-bold mb-10 text-gray-900">{username}...</h2>
+        <div className="mb-10">
+          <h2>Hey there,</h2>
+          <h2>{username}...</h2>
+        </div>
 
         {/* Wrapper to center the text over the SVG */}
         <div style={{ position: "relative", width: 280, height: 280, margin: "0 auto" }}>
