@@ -8,7 +8,7 @@ const options: Options = [
   { id: 2, label: "Name Z to A", value: "za" },
   { id: 3, label: "Date Published", value: "publish" },
   { id: 4, label: "Completion", value: "completion" },
-]
+];
 
 function LibraryPage() {
   return (
@@ -25,7 +25,7 @@ function LibraryPage() {
           <input
             type="text"
             placeholder="Looking for..."
-            className="bg-gray-100 search-inp py-2 pl-2 rounded-xl"
+            className="bg-gray-100 search-inp py-2 pl-2 rounded-xl text-sm"
           />
         </div>
         <div>
@@ -34,7 +34,7 @@ function LibraryPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 export default LibraryPage;

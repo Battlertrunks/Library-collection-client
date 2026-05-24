@@ -6,7 +6,11 @@ function MobileNav() {
 
   return (
     <div className="mobile-nav flex justify-between w-full p-8 pb-6 rounded-t-3xl">
-      <Link to="/">
+      <Link to="/" className="relative">
+        <div
+          className="absolute left-1/2 -translate-x-1/2 bottom-14  bg-gray-800 h-1 rounded-b-2xl transition-all duration-200 ease-in-out"
+          style={{ width: location.pathname === "/" ? "3.5rem" : "0" }}
+        ></div>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 15 15"
@@ -18,7 +22,11 @@ function MobileNav() {
           <path d="M8.543 2.232a.75.75 0 0 0-1.085 0l-5.25 5.5A.75.75 0 0 0 2.75 9H4v4a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-1a1 1 0 1 1 2 0v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1V9h1.25a.75.75 0 0 0 .543-1.268l-5.25-5.5Z" />
         </svg>
       </Link>
-      <Link to="/series">
+      <Link to="/series" className="relative">
+        <div
+          className="absolute left-1/2 -translate-x-1/2 bottom-14 bg-gray-800 h-1 rounded-b-2xl transition-all duration-200 ease-in-out"
+          style={{ width: location.pathname === "/series" ? "3.5rem" : "0" }}
+        ></div>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill={location.pathname === "/series" ? "currentColor" : "none"}
@@ -34,7 +42,11 @@ function MobileNav() {
           />
         </svg>
       </Link>
-      <Link to="/library">
+      <Link to="/library" className="relative">
+        <div
+          className="absolute left-1/2 -translate-x-1/2 bottom-14 bg-gray-800 h-1 rounded-b-2xl transition-all duration-200 ease-in-out"
+          style={{ width: location.pathname === "/library" ? "3.5rem" : "0" }}
+        ></div>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill={location.pathname === "/library" ? "currentColor" : "none"}
@@ -50,24 +62,26 @@ function MobileNav() {
           />
         </svg>
       </Link>
-      <Link to="/search">
-        {
-          location.pathname === "/search" ?
+      <Link to="/search" className="relative">
+        <div
+          className="absolute left-1/2 -translate-x-1/2 bottom-14 bg-gray-800 h-1 rounded-b-2xl tranition-all duration-200 ease-in-out"
+          style={{ width: location.pathname === "/search" ? "3.5rem" : "0" }}
+        ></div>
+        {location.pathname === "/search" ? (
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
             fill="currentColor"
             className="size-7"
           >
-            <path
-              d="M8.25 10.875a2.625 2.625 0 1 1 5.25 0 2.625 2.625 0 0 1-5.25 0Z"
-            />
+            <path d="M8.25 10.875a2.625 2.625 0 1 1 5.25 0 2.625 2.625 0 0 1-5.25 0Z" />
             <path
               fill-rule="evenodd"
               d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-1.125 4.5a4.125 4.125 0 1 0 2.338 7.524l2.007 2.006a.75.75 0 1 0 1.06-1.06l-2.006-2.007a4.125 4.125 0 0 0-3.399-6.463Z"
               clip-rule="evenodd"
             />
-          </svg> :
+          </svg>
+        ) : (
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -82,8 +96,7 @@ function MobileNav() {
               d="m15.75 15.75-2.489-2.489m0 0a3.375 3.375 0 1 0-4.773-4.773 3.375 3.375 0 0 0 4.774 4.774ZM21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
             />
           </svg>
-        }
-
+        )}
       </Link>
     </div>
   );
