@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import "./CustomSelect.css";
 import type { Option, Options } from "../../types/SelectOptions";
 
@@ -11,13 +11,30 @@ function CustomSelect(props: Props) {
 
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [selectedValue, setSelectedValue] = useState<Option>(options[0]);
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  console.log(isOpen);
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
+      }
+    }
+
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen]);
 
   return (
-    <div>
-      <button onClick={() => setIsOpen(true)}>
-        <div className="flex flex-row bg-gray-100 py-2 px-2 rounded-xl text-gray-500 focus:outline-none focus:ring-offset-2 focus:ring-blue-300 text-sm">
+    <div ref={containerRef}>
+      <button onClick={() => setIsOpen(!isOpen)}>
+        <div className="flex flex-row justify-between bg-gray-100 py-2 px-2 rounded-xl text-gray-500 focus:outline-none focus:ring-offset-2 focus:ring-blue-300 text-sm min-w-40">
           {selectedValue.label}
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -35,26 +52,37 @@ function CustomSelect(props: Props) {
       </button>
 
       {/* Dropdown  */}
-      {isOpen ? (
-        <ul
-          className={`transition-opacity ${isOpen ? "opacity-100" : "opacity-0"} shadow p-3`}
-        >
-          {options.map((option: Option, i: number) => {
-            return (
-              <li className={i !== options.length - 1 ? "mb-2" : ""}>
-                <span>{option.label}</span>
-                {i !== options.length - 1 ? (
-                  <hr className="mt-2 text-gray-300" />
-                ) : (
-                  <></>
-                )}
-              </li>
-            );
-          })}
-        </ul>
-      ) : (
-        <></>
-      )}
+      <ul
+        className={`shadow p-3 duration-500 transition-all ${isOpen ? "opacity-100 scale-100" : "opacity-0 scale-95"}`}
+      >
+        {options.map((option: Option, i: number) => {
+          const isSelected = option.value === selectedValue.value;
+          return (
+            <li
+              key={option.value}
+              className={`${isSelected ? "py-1" : ""} ${i !== options.length - 1 ? "mb-2" : ""}`}
+              onClick={() => {
+                if (isOpen) {
+                  setSelectedValue(option);
+                }
+              }}
+            >
+              <span
+                className={`cursor-pointer text-sm select-option ${isSelected ? "selected px-3 py-1.5" : ""}`}
+              >
+                {option.label}
+              </span>
+              {i !== options.length - 1 ? (
+                <hr
+                  className={`text-gray-300 ${isSelected ? "selected mt-3" : "mt-1.5"}`}
+                />
+              ) : (
+                <></>
+              )}
+            </li>
+          );
+        })}
+      </ul>
     </div>
   );
 }
