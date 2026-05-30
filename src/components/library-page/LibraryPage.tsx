@@ -19,7 +19,7 @@ function LibraryPage() {
       </div>
 
       {/* Searrch and Sort By action items */}
-      <div className="flex flex-row justify-center pt-10">
+      <div className="flex flex-row justify-center mx-8 pt-10">
         <div className="flex flex-col">
           <span>Search:</span>
           <input
