@@ -1,6 +1,10 @@
+import { useState } from "react";
 import "./SearchPage.css";
+import FilterModal from "./FilterModal";
 
 function SearchPage() {
+  const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
+
   return (
     <div>
       <div className="mb-10 pt-7 text-center">
@@ -17,7 +21,13 @@ function SearchPage() {
               placeholder="Looking for..."
               className="bg-gray-100 py-2 pl-2 w-full rounded-xl text-sm"
             />
-            <button className="bg-gray-100 p-2 rounded-xl text-sm hover:bg-gray-50">
+            <button
+              type="button"
+              onClick={() => setIsFilterOpen(true)}
+              className="bg-gray-100 p-2 rounded-xl text-sm hover:bg-gray-50"
+              aria-label="Open filters"
+              aria-expanded={isFilterOpen}
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -39,6 +49,13 @@ function SearchPage() {
           </span>
         </div>
       </div>
+
+      {isFilterOpen && (
+        <FilterModal
+          isOpen={isFilterOpen}
+          onClose={() => setIsFilterOpen(false)}
+        />
+      )}
     </div>
   );
 }

@@ -1,0 +1,151 @@
+.filter-modal__backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  z-index: 50;
+  animation: filter-modal-fade-in 0.2s ease-out;
+}
+
+@keyframes filter-modal-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.filter-modal {
+  background-color: white;
+  border-radius: 1rem;
+  width: 100%;
+  max-width: 28rem;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  animation: filter-modal-pop-in 0.2s ease-out;
+}
+
+@keyframes filter-modal-pop-in {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.filter-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid rgb(243, 244, 246);
+}
+
+.filter-modal__title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: rgb(17, 24, 39);
+}
+
+.filter-modal__close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgb(107, 114, 128);
+  padding: 0.375rem;
+  border-radius: 0.5rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.filter-modal__close:hover {
+  background-color: rgb(243, 244, 246);
+  color: rgb(17, 24, 39);
+}
+
+.filter-modal__body {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.filter-modal__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.filter-modal__label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: rgb(75, 85, 99);
+}
+
+.filter-modal__input {
+  background-color: rgb(243, 244, 246);
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.75rem;
+  font-size: 0.875rem;
+  color: rgb(17, 24, 39);
+  width: 100%;
+  border: none;
+  outline: none;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.filter-modal__input::placeholder {
+  color: rgb(156, 163, 175);
+}
+
+.filter-modal__input:focus {
+  background-color: rgb(229, 231, 235);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.4);
+}
+
+.filter-modal__footer {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid rgb(243, 244, 246);
+}
+
+.filter-modal__btn {
+  padding: 0.5rem 1rem;
+  border-radius: 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.filter-modal__btn--secondary {
+  background-color: rgb(243, 244, 246);
+  color: rgb(75, 85, 99);
+}
+
+.filter-modal__btn--secondary:hover {
+  background-color: rgb(229, 231, 235);
+}
+
+.filter-modal__btn--primary {
+  background-color: rgb(31, 41, 55);
+  color: white;
+}
+
+.filter-modal__btn--primary:hover {
+  background-color: rgb(17, 24, 39);
+}
