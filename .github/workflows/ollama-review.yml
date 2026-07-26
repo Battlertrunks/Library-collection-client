@@ -22,7 +22,7 @@ jobs:
       - name: Send Diff to Ollama
         run: |
           # Use your server's Tailscale IP or MagicDNS hostname
-          curl -s https://truenas-scale.tail89c53f.ts.net:30068/api/generate \
+          curl -s http://truenas-scale.tail89c53f.ts.net:30068/api/generate \
             -d '{
               "model": "gemma4:12b",
               "prompt": "Review this pull request code diff and check for potential bugs..."

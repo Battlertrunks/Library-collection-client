@@ -24,7 +24,7 @@ jobs:
       - name: Test Ping & Ollama Connection
         run: |
           # Replace with your Ollama host's MagicDNS name or Tailscale IP (e.g. 100.x.y.z)
-          OLLAMA_HOST="http://your-ollama-host.tailnet-name.ts.net:11434"
+          OLLAMA_HOST="http://truenas-scale.tail89c53f.ts.net:30068""
 
           echo "1. Checking network connectivity..."
           curl -I --connect-timeout 5 "$OLLAMA_HOST" || exit 1
@@ -34,7 +34,7 @@ jobs:
 
       - name: Extract Diff & Send to Ollama
         run: |
-          OLLAMA_HOST="https://truenas-scale.tail89c53f.ts.net:30068"
+          OLLAMA_HOST="http://truenas-scale.tail89c53f.ts.net:30068"
 
           # Get git diff (PR diff if event is pull_request, else compare last 2 commits)
           if [ "${{ github.event_name }}" = "pull_request" ]; then
