@@ -29,6 +29,8 @@ jobs:
         run: |
           OLLAMA_HOST="http://truenas-scale.tail89c53f.ts.net:30068"
 
+          PROMPT_TEMPLATE=$(cat prompt-template.md)
+
           if [ "${{ github.event_name }}" = "pull_request" ]; then
             DIFF=$(git diff origin/${{ github.base_ref }}..HEAD)
           else
@@ -42,9 +44,9 @@ jobs:
           echo "Sending diff to Ollama..."
 
           # Query Ollama and extract the response text
-          RESPONSE=$(jq -n --arg diff "$DIFF" '{
+          RESPONSE=$(jq -n --arg diff "$DIFF" --arg template "$PROMPT_TEMPLATE" '{
             model: "gemma4:12b",
-            prompt: ("You are an expert AI code reviewer. Briefly review this git diff for bugs, performance issues, or security concerns. Format your output nicely using Markdown:\n\n" + $diff),
+            prompt: ("$template + "\n\n### CODE TO REVIEW:\n" + $diff),
             stream: false
           }' | curl -s -X POST "$OLLAMA_HOST/api/generate" \
                -H "Content-Type: application/json" \
