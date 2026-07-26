@@ -1,0 +1,62 @@
+name: Test Ollama Review
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+  workflow_dispatch: # Allows manual trigger from GitHub Actions tab
+
+jobs:
+  test-ollama:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetch all history so git diff works
+
+      - name: Connect to Tailnet
+        uses: tailscale/github-action@v4
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          tags: tag:ci
+
+      - name: Test Ping & Ollama Connection
+        run: |
+          # Replace with your Ollama host's MagicDNS name or Tailscale IP (e.g. 100.x.y.z)
+          OLLAMA_HOST="http://your-ollama-host.tailnet-name.ts.net:11434"
+
+          echo "1. Checking network connectivity..."
+          curl -I --connect-timeout 5 "$OLLAMA_HOST" || exit 1
+
+          echo "2. Fetching available Ollama models..."
+          curl -s "$OLLAMA_HOST/api/tags" | jq .
+
+      - name: Extract Diff & Send to Ollama
+        run: |
+          OLLAMA_HOST="https://truenas-scale.tail89c53f.ts.net:30068"
+
+          # Get git diff (PR diff if event is pull_request, else compare last 2 commits)
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            DIFF=$(git diff origin/${{ github.base_ref }}..HEAD)
+          else
+            DIFF=$(git diff HEAD~1..HEAD)
+          fi
+
+          # Safeguard if diff is empty
+          if [ -z "$DIFF" ]; then
+            DIFF="No visible code changes."
+          fi
+
+          echo "Sending diff to Ollama..."
+
+          RESPONSE=$(jq -n --arg diff "$DIFF" '{
+            model: "gemma4:12b",
+            prompt: ("You are a code reviewer. Briefly review this git diff:\n\n" + $diff),
+            stream: false
+          }' | curl -s -X POST "$OLLAMA_HOST/api/generate" \
+               -H "Content-Type: application/json" \
+               -d @-)
+
+          echo "--- Ollama Response ---"
+          echo "$RESPONSE" | jq -r '.response'
