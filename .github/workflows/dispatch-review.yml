@@ -29,6 +29,24 @@ jobs:
         with:
           fetch-depth: 0 # Fetch all history so git diff works
 
+      - name: Fetch PR Details
+        if: github.event_name == 'issue_comment'
+        id: pr_details
+        run: |
+          PR_JSON=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            "${{ github.event.issue.pull_request.url }}")
+          HEAD_REF=$(echo "$PR_JSON" | jq -r '.head.ref')
+          BASE_REF=$(echo "$PR_JSON" | jq -r '.base.ref')
+          echo "HEAD_REF=$HEAD_REF" >> $GITHUB_ENV
+          echo "BASE_REF=$BASE_REF" >> $GITHUB_ENV
+
+      # Checkout the PR's branch
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.HEAD_REF || github.head_ref }}
+          fetch-depth: 0
+
       - name: Connect to Tailnet
         uses: tailscale/github-action@v4
         with:
