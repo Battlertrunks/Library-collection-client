@@ -30,7 +30,7 @@ jobs:
           OLLAMA_HOST="http://truenas-scale.tail89c53f.ts.net:30068"
 
           # 1. Read the guidelines from Markdown file
-          PROMPT_FILE=".github/prompt-template.md")
+          PROMPT_FILE=".github/prompt-template.md"
           if [ -f "$PROMPT_FILE" ]; then
             SYSTEM_PROMPT=$(cat "$PROMPT_FILE")
           else
