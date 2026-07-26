@@ -53,9 +53,10 @@ jobs:
           # 3. Construct the JSON safety with jq and query Ollama
           RESPONSE=$(jq -n \
             --arg diff "$DIFF" \
-            --arg template "$SYSTEM_PROMPT" '{
+            --arg template "$SYSTEM_PROMPT" \
+          '{
             model: "gemma4:12b",
-            prompt: ("$template + "\n\n### Git Diff to Review:\n\n" + $diff),
+            prompt: ($template + "\n\n### Git Diff to Review:\n\n" + $diff),
             stream: false
           }' | curl -s -X POST "$OLLAMA_HOST/api/generate" \
                -H "Content-Type: application/json" \
