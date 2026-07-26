@@ -2,15 +2,27 @@ name: Test Ollama Review
 
 on:
   pull_request:
-    types: [opened, synchronize]
-  workflow_dispatch: # Allows manual trigger from GitHub Actions tab
+    types: [review_requested]
+  issue_comment:
+    types: [created]
 
 jobs:
-  test-ollama:
+  gemma-reviewer:
+    # Trigger if:
+    # 1. PR requested a review specifically from the bot/user, OR
+    # 2. Some typed "@ollama review" or "/review" in a PR comment
+
+    # I should replace myself from this running, maybe add a bot or dummy
+    if: |
+      (github.event_name == 'pull_request' && github.event.requested_reviewer.login == 'Battlertrunks') ||
+      (github.event_name == 'issue_comment' && github.event.issue.pull_request && contains(github.event.comment.body, '/review'))
+
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
       contents: read
+      issues: write
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -24,12 +36,38 @@ jobs:
           oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
           tags: tag:ci
 
-      - name: Extract Diff & Query Ollama
-        id: ollama_review
+      - name: Gather Diff & Existing File Context
+        id: gather_context
         run: |
-          OLLAMA_HOST="http://truenas-scale.tail89c53f.ts.net:30068"
+          # 1. Determine Target Base Branch (main)
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BASE_REF="origin/${{ github.base_ref }}"
+          else
+            # For issue comments, fetch base branch via GitHub API
+            BASE_BRANCH=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+              "${{ github.event.issue.pull_request.url }}" | jq -r '.base.ref')
+            BASE_REF="origin/$BASE_BRANCH"
+          fi
 
-          # 1. Read the guidelines from Markdown file
+          # 2. Extract Git Diff
+          DIFF=$(git diff $BASE_REF..HEAD)
+          if [ -z "$DIFF" ]; then
+            echo "No changes found."
+            exit 0
+          fi
+
+          # 3. Gather full existing source context for modified files
+          CHANGED_FILES=$(git diff --name-only $BASE_REF..HEAD)
+          EXISTING_CONTEXT=""
+
+          for file in $CHANGED_FILES; do
+            if git show $BASE_REF:"$file" > /dev/null 2>&1; then
+              CONTENT=$(git show $BASE_REF:"$file")
+              EXISTING_CONTEXT="${EXISTING_CONTENT}\n--- FILE: $file (Base Branch) ---\n${CONTENT}\n"
+            fi
+          done
+
+          # 4. Load Prompt Instructions
           PROMPT_FILE=".github/prompt-template.md"
           if [ -f "$PROMPT_FILE" ]; then
             SYSTEM_PROMPT=$(cat "$PROMPT_FILE")
@@ -37,26 +75,19 @@ jobs:
             SYSTEM_PROMPT="You are an expert AI code reviewer. Briefly review this git diff for bugs, performance issues, or security concerns."
           fi
 
-          # 2. Extract git diff
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            DIFF=$(git diff origin/${{ github.base_ref }}..HEAD)
-          else
-            DIFF=$(git diff HEAD~1..HEAD)
-          fi
 
-          if [ -z "$DIFF" ]; then
-            DIFF="No visible code changes."
-          fi
-
-          echo "Sending diff to Ollama..."
+          # 5. Query Ollama
+          OLLAMA_HOST="http://truenas-scale.tail89c53f.ts.net:30068"
+          echo "Sending context and diff to Ollama..."
 
           # 3. Construct the JSON safety with jq and query Ollama
           RESPONSE=$(jq -n \
             --arg diff "$DIFF" \
-            --arg template "$SYSTEM_PROMPT" \
+            --arg prompt "$SYSTEM_PROMPT" \
+            --arg context "$EXISTING_CONTEXT" \
           '{
             model: "gemma4:12b",
-            prompt: ($template + "\n\n### Git Diff to Review:\n\n" + $diff),
+            prompt: ($prompt + "\n\n### Existing Base Code Context:\n" + $context + "\n\n### Incoming Git Diff To Review:\n" + $diff),
             stream: false
           }' | curl -s -X POST "$OLLAMA_HOST/api/generate" \
                -H "Content-Type: application/json" \
@@ -74,11 +105,15 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const commentBody = `### Local Ollama Code Review\n\n${process.env.OLLAMA_COMMENT}\n\n---\n*Reviewed using local GPU pipeline via Tailscale.*`;
+            const PR_NUMBER = context.payload.issue
+              ? context.payload.issue.number
+              : context.payload.pull_request.number;
+
+            const commentBody = `### Gemma Code Review\n\n${process.env.OLLAMA_COMMENT}\n\n---\n*Reviewed using local GPU pipeline via Tailscale.*`;
 
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: context.payload.pull_request.number,
+              issue_number: PR_NUMBER,
               body: commentBody
             });
