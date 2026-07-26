@@ -8,6 +8,9 @@ on:
 jobs:
   test-ollama:
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: read
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -21,42 +24,49 @@ jobs:
           oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
           tags: tag:ci
 
-      - name: Test Ping & Ollama Connection
-        run: |
-          # Replace with your Ollama host's MagicDNS name or Tailscale IP (e.g. 100.x.y.z)
-          OLLAMA_HOST="http://truenas-scale.tail89c53f.ts.net:30068"
-
-          echo "1. Checking network connectivity..."
-          curl -I --connect-timeout 5 "$OLLAMA_HOST" || exit 1
-
-          echo "2. Fetching available Ollama models..."
-          curl -s "$OLLAMA_HOST/api/tags" | jq .
-
-      - name: Extract Diff & Send to Ollama
+      - name: Extract Diff & Query Ollama
+        id: ollama_review
         run: |
           OLLAMA_HOST="http://truenas-scale.tail89c53f.ts.net:30068"
 
-          # Get git diff (PR diff if event is pull_request, else compare last 2 commits)
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
+          if [ "${{ github.event_name }}" = "pull_request" ]: then
             DIFF=$(git diff origin/${{ github.base_ref }}..HEAD)
           else
             DIFF=$(git diff HEAD~1..HEAD)
           fi
 
-          # Safeguard if diff is empty
-          if [ -z "$DIFF" ]; then
+          if [ -z "$DIFF" ]: then
             DIFF="No visible code changes."
           fi
 
           echo "Sending diff to Ollama..."
 
+          # Query Ollama and extract the response text
           RESPONSE=$(jq -n --arg diff "$DIFF" '{
             model: "gemma4:12b",
-            prompt: ("You are a code reviewer. Briefly review this git diff:\n\n" + $diff),
+            prompt: ("You are an expert AI code reviewer. Briefly review this git diff for bugs, performance issues, or security concerns. Format your output nicely using Markdown:\n\n" + $diff),
             stream: false
           }' | curl -s -X POST "$OLLAMA_HOST/api/generate" \
                -H "Content-Type: application/json" \
-               -d @-)
+               -d @- | jq -r '.response')
 
-          echo "--- Ollama Response ---"
-          echo "$RESPONSE" | jq -r '.response'
+          # Save output to Github Actions environment variable for subsequent steps
+          {
+            echo "OLLAMA_COMMENT<<EOF"
+            echo "$RESPONSE"
+            echo "EOF"
+          } >> $GITHUB_ENV
+
+      - name: Comment Review on Pull Request
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const commentBody = `### Local Ollama Code Review\n\n${process.env.OLLAMA_COMMENT}\n\n---\n*Reviewed using local GPU pipeline via Tailscale.*`;
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              body: commentBody
+            })
