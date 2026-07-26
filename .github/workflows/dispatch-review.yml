@@ -51,7 +51,9 @@ jobs:
           echo "Sending diff to Ollama..."
 
           # 3. Construct the JSON safety with jq and query Ollama
-          RESPONSE=$(jq -n --arg diff "$DIFF" --arg template "$PROMPT_TEMPLATE" '{
+          RESPONSE=$(jq -n \
+            --arg diff "$DIFF" \
+            --arg template "$SYSTEM_PROMPT" '{
             model: "gemma4:12b",
             prompt: ("$template + "\n\n### Git Diff to Review:\n\n" + $diff),
             stream: false
