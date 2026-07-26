@@ -24,28 +24,32 @@ jobs:
       issues: read
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0 # Fetch all history so git diff works
-
-      - name: Fetch PR Details
-        if: github.event_name == 'issue_comment'
+      # Step 1: Resolve PR branch details for issue_comment events
+      - name: Resolve PR Details
         id: pr_details
         run: |
-          PR_JSON=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            "${{ github.event.issue.pull_request.url }}")
-          HEAD_REF=$(echo "$PR_JSON" | jq -r '.head.ref')
-          BASE_REF=$(echo "$PR_JSON" | jq -r '.base.ref')
-          echo "HEAD_REF=$HEAD_REF" >> $GITHUB_ENV
-          echo "BASE_REF=$BASE_REF" >> $GITHUB_ENV
+          if [ "${{ github.event_name }}" = "issue_comment" ]; then
+            PR_JSON=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+              "${{ github.event.issue.pull_request.url }}")
+            echo "HEAD_REF=$(echo "$PR_JSON" | jq -r '.head.ref')" >> $GITHUB_ENV
+            echo "BASE_REF=$(echo "$PR_JSON" | jq -r '.base.ref')" >> $GITHUB_ENV
+          else
+            echo "HEAD_REF=${{ github.head_ref }}" >> $GITHUB_ENV
+            echo "BASE_REF=${{ github.base_ref }}" >> $GITHUB_ENV
+          fi
 
       # Checkout the PR's branch
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          ref: ${{ env.HEAD_REF || github.head_ref }}
+          ref: ${{ env.HEAD_REF }}
           fetch-depth: 0
+
+      # Step 3: Explicitly fetch base branch for reliable diffing
+      - name: Fetch Base Branch History
+        run: |
+          echo "Fetching base branch: ${{ env.BASE_REF }}"
+          git fetch origin ${{ env.BASE_REF }}:${{ env.BASE_REF }} || git fetch origin ${{ env.BASE_REF }}
 
       - name: Connect to Tailnet
         uses: tailscale/github-action@v4
@@ -123,15 +127,11 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const PR_NUMBER = context.payload.issue
-              ? context.payload.issue.number
-              : context.payload.pull_request.number;
-
             const commentBody = `### Gemma Code Review\n\n${process.env.OLLAMA_COMMENT}\n\n---\n*Reviewed using local GPU pipeline via Tailscale.*`;
 
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: PR_NUMBER,
+              issue_number: context.payload.pull_request.number,
               body: commentBody
             });
