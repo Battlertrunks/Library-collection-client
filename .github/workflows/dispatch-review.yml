@@ -29,16 +29,19 @@ jobs:
         with:
           fetch-depth: 0 # Fetch all history so git diff works
 
-      - name: Fetch PR Details
-        if: github.event_name == 'issue_comment'
+      # Step 1: Resolve PR branch details for issue_comment events
+      - name: Resolve PR Details
         id: pr_details
         run: |
-          PR_JSON=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            "${{ github.event.issue.pull_request.url }}")
-          HEAD_REF=$(echo "$PR_JSON" | jq -r '.head.ref')
-          BASE_REF=$(echo "$PR_JSON" | jq -r '.base.ref')
-          echo "HEAD_REF=$HEAD_REF" >> $GITHUB_ENV
-          echo "BASE_REF=$BASE_REF" >> $GITHUB_ENV
+          if [ "${{ github.event_name }}" = "issue_comment" ]; then
+            PR_JSON=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+              "${{ github.event.issue.pull_request.url }}")
+            echo "HEAD_REF=$(echo "$PR_JSON" | jq -r '.head.ref')" >> $GITHUB_ENV
+            echo "BASE_REF=$(echo "$PR_JSON" | jq -r '.base.ref')" >> $GITHUB_ENV
+          else
+            echo "HEAD_REF=${{ github.head_ref }}" >> $GITHUB_ENV
+            echo "BASE_REF=${{ github.base_ref }}" >> $GITHUB_ENV
+          fi
 
       # Checkout the PR's branch
       - name: Checkout repository
