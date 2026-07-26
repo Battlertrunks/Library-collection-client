@@ -24,11 +24,6 @@ jobs:
       issues: read
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0 # Fetch all history so git diff works
-
       # Step 1: Resolve PR branch details for issue_comment events
       - name: Resolve PR Details
         id: pr_details
