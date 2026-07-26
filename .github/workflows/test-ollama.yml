@@ -35,7 +35,7 @@ jobs:
             DIFF=$(git diff HEAD~1..HEAD)
           fi
 
-          if [ -z "$DIFF" ]: then
+          if [ -z "$DIFF" ]; then
             DIFF="No visible code changes."
           fi
 
