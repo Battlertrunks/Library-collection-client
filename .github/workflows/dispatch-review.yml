@@ -42,8 +42,14 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          ref: ${{ env.HEAD_REF || github.head_ref }}
+          ref: ${{ env.HEAD_REF }}
           fetch-depth: 0
+
+      # Step 3: Explicitly fetch base branch for reliable diffing
+      - name: Fetch Base Branch History
+        run: |
+          echo "Fetching base branch: ${{ env.BASE_REF }}"
+          git fetch origin ${{ env.BASE_REF }}:${{ env.BASE_REF }} || git fetch origin ${{ env.BASE_REF }}
 
       - name: Connect to Tailnet
         uses: tailscale/github-action@v4
