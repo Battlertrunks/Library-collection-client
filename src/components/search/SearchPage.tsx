@@ -8,23 +8,25 @@ function SearchPage() {
   return (
     <div>
       <div className="mb-10 pt-7 text-center">
-        <h2>Search Books</h2>
+        <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">
+          Search Books
+        </h2>
       </div>
 
       {/* Search input with filter button */}
       <div className="flex flex-row justify-center pt-10">
         <div className="flex flex-col w-full mx-8">
-          <span>Search:</span>
+          <span className="text-gray-900 dark:text-white">Search:</span>
           <div className="flex flex-row justify-between gap-2">
             <input
               type="text"
               placeholder="Looking for..."
-              className="bg-gray-100 py-2 pl-2 w-full rounded-xl text-sm"
+              className="bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white placeholder:text-gray-500 py-2 pl-2 w-full rounded-xl text-sm"
             />
             <button
               type="button"
               onClick={() => setIsFilterOpen(true)}
-              className="bg-gray-100 p-2 rounded-xl text-sm hover:bg-gray-50"
+              className="bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white p-2 rounded-xl text-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
               aria-label="Open filters"
               aria-expanded={isFilterOpen}
             >

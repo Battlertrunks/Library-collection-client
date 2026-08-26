@@ -14,18 +14,22 @@ function LibraryPage() {
   return (
     <div>
       <div className="mb-10 pt-7 text-center">
-        <h2>Your Collection</h2>
-        <h2>Thus Far</h2>
+        <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">
+          Your Collection
+        </h2>
+        <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">
+          Thus Far
+        </h2>
       </div>
 
       {/* Searrch and Sort By action items */}
       <div className="flex flex-row justify-center mx-8 pt-10">
         <div className="flex flex-col">
-          <span>Search:</span>
+          <span className="text-gray-900 dark:text-white">Search:</span>
           <input
             type="text"
             placeholder="Looking for..."
-            className="bg-gray-100 search-inp py-2 pl-2 rounded-xl text-sm"
+            className="bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white placeholder:text-gray-500 search-inp py-2 pl-2 rounded-xl text-sm"
           />
         </div>
         <div>
