@@ -7,9 +7,7 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineConfig({
   plugins: [
     react({
-      babel: {
-        plugins: [["babel-plugin-react-compiler"]],
-      },
+      compiler: true,
     }),
     tanstackRouter(),
     tailwindcss(),
