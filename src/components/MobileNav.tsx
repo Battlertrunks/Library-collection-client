@@ -5,10 +5,10 @@ function MobileNav() {
   const location = useLocation();
 
   return (
-    <div className="mobile-nav flex justify-between w-full p-8 pb-6 rounded-t-3xl">
+    <div className="mobile-nav flex justify-between w-full p-8 pb-6 rounded-t-3xl bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white transition-colors duration-200">
       <Link to="/" className="relative">
         <div
-          className="absolute left-1/2 -translate-x-1/2 bottom-14  bg-gray-800 h-1 rounded-b-2xl transition-all duration-200 ease-in-out"
+          className="absolute left-1/2 -translate-x-1/2 bottom-14 bg-gray-800 dark:bg-white h-1 rounded-b-2xl transition-all duration-200 ease-in-out"
           style={{ width: location.pathname === "/" ? "3.5rem" : "0" }}
         ></div>
         <svg
@@ -24,7 +24,7 @@ function MobileNav() {
       </Link>
       <Link to="/series" className="relative">
         <div
-          className="absolute left-1/2 -translate-x-1/2 bottom-14 bg-gray-800 h-1 rounded-b-2xl transition-all duration-200 ease-in-out"
+          className="absolute left-1/2 -translate-x-1/2 bottom-14 bg-gray-800 dark:bg-white h-1 rounded-b-2xl transition-all duration-200 ease-in-out"
           style={{ width: location.pathname === "/series" ? "3.5rem" : "0" }}
         ></div>
         <svg
@@ -44,7 +44,7 @@ function MobileNav() {
       </Link>
       <Link to="/library" className="relative">
         <div
-          className="absolute left-1/2 -translate-x-1/2 bottom-14 bg-gray-800 h-1 rounded-b-2xl transition-all duration-200 ease-in-out"
+          className="absolute left-1/2 -translate-x-1/2 bottom-14 bg-gray-800 dark:bg-white h-1 rounded-b-2xl transition-all duration-200 ease-in-out"
           style={{ width: location.pathname === "/library" ? "3.5rem" : "0" }}
         ></div>
         <svg
@@ -64,7 +64,7 @@ function MobileNav() {
       </Link>
       <Link to="/search" className="relative">
         <div
-          className="absolute left-1/2 -translate-x-1/2 bottom-14 bg-gray-800 h-1 rounded-b-2xl tranition-all duration-200 ease-in-out"
+          className="absolute left-1/2 -translate-x-1/2 bottom-14 bg-gray-800 dark:bg-white h-1 rounded-b-2xl tranition-all duration-200 ease-in-out"
           style={{ width: location.pathname === "/search" ? "3.5rem" : "0" }}
         ></div>
         {location.pathname === "/search" ? (

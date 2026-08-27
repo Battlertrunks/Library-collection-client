@@ -19,3 +19,19 @@
 .select-option.selected:active {
   background-color: rgba(59, 130, 246, 0.25);
 }
+
+.dark .select-option:hover {
+  background-color: rgba(96, 165, 250, 0.2);
+}
+
+.dark .select-option:active {
+  background-color: rgba(96, 165, 250, 0.3);
+}
+
+.dark .select-option.selected {
+  background-color: rgba(96, 165, 250, 0.25);
+}
+
+.dark .select-option.selected:active {
+  background-color: rgba(96, 165, 250, 0.35);
+}

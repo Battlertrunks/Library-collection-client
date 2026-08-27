@@ -9,9 +9,11 @@ function FeaturedBook() {
   // TODO: Make this a link to the book once the library route has been established
   return (
     <div className="mt-10">
-      <h2 className="text-3xl text-left mb-2 font-bold">Book of the Day</h2>
+      <h2 className="text-3xl text-left mb-2 font-bold text-gray-900 dark:text-white">
+        Book of the Day
+      </h2>
 
-      <div className="bg-gray-100 rounded-xl mt-4 text-center py-4 shadow">
+      <div className="bg-gray-100 dark:bg-gray-800 rounded-xl mt-4 text-center py-4 shadow">
         <div className="py-4">
           <img
             className="featured-book__cover ml-3 mx-auto inline-block rounded-2xl"

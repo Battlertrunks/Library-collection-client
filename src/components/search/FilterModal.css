@@ -26,9 +26,14 @@
   max-width: 28rem;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
     0 8px 10px -6px rgba(0, 0, 0, 0.1);
   animation: filter-modal-pop-in 0.2s ease-out;
+}
+
+.dark .filter-modal {
+  background-color: rgb(17, 24, 39);
 }
 
 @keyframes filter-modal-pop-in {
@@ -50,10 +55,18 @@
   border-bottom: 1px solid rgb(243, 244, 246);
 }
 
+.dark .filter-modal__header {
+  border-bottom-color: rgb(55, 65, 81);
+}
+
 .filter-modal__title {
   font-size: 1.125rem;
   font-weight: 600;
   color: rgb(17, 24, 39);
+}
+
+.dark .filter-modal__title {
+  color: white;
 }
 
 .filter-modal__close {
@@ -66,12 +79,19 @@
   background: transparent;
   border: none;
   cursor: pointer;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
 }
 
 .filter-modal__close:hover {
   background-color: rgb(243, 244, 246);
   color: rgb(17, 24, 39);
+}
+
+.dark .filter-modal__close:hover {
+  background-color: rgb(31, 41, 55);
+  color: white;
 }
 
 .filter-modal__body {
@@ -93,6 +113,10 @@
   color: rgb(75, 85, 99);
 }
 
+.dark .filter-modal__label {
+  color: rgb(209, 213, 219);
+}
+
 .filter-modal__input {
   background-color: rgb(243, 244, 246);
   padding: 0.5rem 0.75rem;
@@ -102,7 +126,9 @@
   width: 100%;
   border: none;
   outline: none;
-  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .filter-modal__input::placeholder {
@@ -114,12 +140,30 @@
   box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.4);
 }
 
+.dark .filter-modal__input {
+  background-color: rgb(31, 41, 55);
+  color: white;
+}
+
+.dark .filter-modal__input::placeholder {
+  color: rgb(156, 163, 175);
+}
+
+.dark .filter-modal__input:focus {
+  background-color: rgb(55, 65, 81);
+  box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.4);
+}
+
 .filter-modal__footer {
   display: flex;
   gap: 0.75rem;
   justify-content: flex-end;
   padding: 1rem 1.5rem;
   border-top: 1px solid rgb(243, 244, 246);
+}
+
+.dark .filter-modal__footer {
+  border-top-color: rgb(55, 65, 81);
 }
 
 .filter-modal__btn {
@@ -141,6 +185,15 @@
   background-color: rgb(229, 231, 235);
 }
 
+.dark .filter-modal__btn--secondary {
+  background-color: rgb(31, 41, 55);
+  color: rgb(209, 213, 219);
+}
+
+.dark .filter-modal__btn--secondary:hover {
+  background-color: rgb(55, 65, 81);
+}
+
 .filter-modal__btn--primary {
   background-color: rgb(31, 41, 55);
   color: white;
@@ -148,4 +201,13 @@
 
 .filter-modal__btn--primary:hover {
   background-color: rgb(17, 24, 39);
+}
+
+.dark .filter-modal__btn--primary {
+  background-color: rgb(243, 244, 246);
+  color: rgb(17, 24, 39);
+}
+
+.dark .filter-modal__btn--primary:hover {
+  background-color: rgb(229, 231, 235);
 }

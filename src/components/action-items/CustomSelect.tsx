@@ -34,7 +34,7 @@ function CustomSelect(props: Props) {
   return (
     <div ref={containerRef}>
       <button onClick={() => setIsOpen(!isOpen)}>
-        <div className="flex flex-row justify-between bg-gray-100 py-2 px-2 rounded-xl text-gray-500 focus:outline-none focus:ring-offset-2 focus:ring-blue-300 text-sm min-w-40">
+        <div className="flex flex-row justify-between bg-gray-100 dark:bg-gray-800 py-2 px-2 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-offset-2 focus:ring-blue-300 text-sm min-w-40 transition-colors">
           {selectedValue.label}
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -53,7 +53,7 @@ function CustomSelect(props: Props) {
 
       {/* Dropdown  */}
       <ul
-        className={`shadow p-3 duration-500 transition-all ${isOpen ? "opacity-100 scale-100" : "opacity-0 scale-95"}`}
+        className={`shadow p-3 duration-500 transition-all bg-white dark:bg-gray-800 rounded-xl ${isOpen ? "opacity-100 scale-100" : "opacity-0 scale-95"}`}
       >
         {options.map((option: Option, i: number) => {
           const isSelected = option.value === selectedValue.value;
@@ -68,13 +68,13 @@ function CustomSelect(props: Props) {
               }}
             >
               <span
-                className={`cursor-pointer text-sm select-option ${isSelected ? "selected px-3 py-1.5" : ""}`}
+                className={`cursor-pointer text-sm text-gray-900 dark:text-white select-option ${isSelected ? "selected px-3 py-1.5" : ""}`}
               >
                 {option.label}
               </span>
               {i !== options.length - 1 ? (
                 <hr
-                  className={`text-gray-300 ${isSelected ? "selected mt-3" : "mt-1.5"}`}
+                  className={`text-gray-300 dark:text-gray-600 ${isSelected ? "selected mt-3" : "mt-1.5"}`}
                 />
               ) : (
                 <></>
