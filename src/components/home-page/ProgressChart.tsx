@@ -14,19 +14,19 @@ const ProgressChart = (props: progressChart) => {
     size = 300,
     strokeWidth = 8,
     startAngle = -150,
-    trackColor = "#E5E5E5",
-    progressColor = "#000000",
+    trackColor,
+    progressColor,
     className = ""
   } = props;
   // Radius must account for the stroke width so the line stays inside the viewBox
-  const radius = (size - strokeWidth) / 2;
-  const circumference = 2 * Math.PI * radius;
+  const radius: number = (size - strokeWidth) / 2;
+  const circumference: number = 2 * Math.PI * radius;
 
   // Clamp percentage between 0 and 1
-  const progress = Math.min(Math.max(percentage, 0), 1);
+  const progress: number = Math.min(Math.max(percentage, 0), 1);
 
   // How much of the circle to "hide" to show the progress
-  const dashoffset = circumference * (1 - progress);
+  const dashoffset: number = circumference * (1 - progress);
 
   return (
     <div className={`arc-progress-wrapper ${className}`} style={{ width: size, height: size, position: 'relative' }}>
@@ -46,8 +46,9 @@ const ProgressChart = (props: progressChart) => {
           cy={size / 2}
           r={radius}
           fill="transparent"
-          stroke={trackColor}
+          stroke={trackColor ?? "#E5E5E5"}
           strokeWidth={strokeWidth}
+          className={trackColor === undefined ? "dark:stroke-neutral-800" : undefined}
         />
         {/* Progress Line */}
         <circle
@@ -55,11 +56,12 @@ const ProgressChart = (props: progressChart) => {
           cy={size / 2}
           r={radius}
           fill="transparent"
-          stroke={progressColor}
+          stroke={progressColor ?? "#000000"}
           strokeWidth={strokeWidth}
           strokeDasharray={circumference}
           strokeDashoffset={dashoffset}
           strokeLinecap="round" // Crucial for the smooth pill-shaped ends
+          className={progressColor === undefined ? "dark:stroke-white" : undefined}
           style={{ transition: 'stroke-dashoffset 0.6s cubic-bezier(0.4, 0, 0.2, 1)' }}
         />
       </svg>
