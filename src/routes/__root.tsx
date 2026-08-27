@@ -15,10 +15,6 @@ export const Route = createRootRoute({
 function RootComponent() {
   const location = useLocation();
 
-  useEffect(() => {
-    loadSettings();
-  }, []);
-
   const showSettingsLink = location.pathname !== "/settings";
 
   return (

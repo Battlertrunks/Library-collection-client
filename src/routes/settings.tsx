@@ -7,11 +7,11 @@ export const Route = createFileRoute("/settings")({
 
 function RouteComponent() {
   const router = useRouter();
-    return <SettingsPage onClose={() => {
-        if (router.history.canGoBack()) {
-            router.history.back();
-        } else {
-            router.navigate({ to: "/" })
-        }
-    }} />;
+  return <SettingsPage onClose={() => {
+      if (router.history.canGoBack()) {
+          router.history.back();
+      } else {
+          router.navigate({ to: "/" })
+      }
+  }} />;
 }
