@@ -1,3 +1,10 @@
 .search-inp {
   width: 90%;
 }
+
+.book-card__thumbnail {
+  width: 4rem;
+  height: 6rem;
+  object-fit: cover;
+  flex-shrink: 0;
+}
