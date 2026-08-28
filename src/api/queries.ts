@@ -6,7 +6,6 @@ export const GET_BOOK_LISTINGS = gql(`
       id
       title
       authors
-      price
       thumbnail_url
       published_date
     }

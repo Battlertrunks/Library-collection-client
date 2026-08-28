@@ -24,16 +24,6 @@ describe("FeaturedBook", () => {
     expect(html).toContain("2019");
   });
 
-  it("renders the price", () => {
-    const html = renderToString(<FeaturedBook />);
-    expect(html).toContain("9.99");
-  });
-
-  it("renders the separator between year and price", () => {
-    const html = renderToString(<FeaturedBook />);
-    expect(html).toContain("|");
-  });
-
   it("renders the cover image with correct alt text", () => {
     const html = renderToString(<FeaturedBook />);
     expect(html).toContain('alt="Books Widget"');
