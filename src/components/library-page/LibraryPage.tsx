@@ -1,4 +1,5 @@
 import type { Options } from "../../types/SelectOptions";
+import useBooks from "../../api/useBooks";
 import CustomSelect from "../action-items/CustomSelect";
 import "./LibraryPage.css";
 
@@ -11,6 +12,16 @@ const options: Options = [
 ];
 
 function LibraryPage() {
+  const { books, loading, error } = useBooks();
+
+  if (loading) {
+    console.log("Loading book listings...");
+  } else if (error) {
+    console.error("Failed to fetch book listings:", error.message);
+  } else {
+    console.log("Book listings:", books);
+  }
+
   return (
     <div>
       <div className="mb-10 pt-7 text-center">
