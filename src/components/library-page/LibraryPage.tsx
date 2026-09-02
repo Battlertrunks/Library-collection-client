@@ -1,10 +1,9 @@
 import type { Options } from "../../types/SelectOptions";
 import useBooks from "../../api/useBooks";
+import useBooksCollected from "../../api/useBooksCollected";
 import CustomSelect from "../action-items/CustomSelect";
+import LibraryBookCard from "./LibraryBookCard";
 import "./LibraryPage.css";
-
-const DEFAULT_BOOK_COVER =
-  "https://placehold.co/128x192/gray/white?text=No+Cover";
 
 const options: Options = [
   { id: 1, label: "Recently Added", value: "recent" },
@@ -14,19 +13,18 @@ const options: Options = [
   { id: 4, label: "Completion", value: "completion" },
 ];
 
-function formatPublicationDate(publishedDate: string): string {
-  const date = new Date(publishedDate);
-  return Number.isNaN(date.getTime())
-    ? ""
-    : date.toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-      });
-}
-
 function LibraryPage() {
-  const { books, loading, error } = useBooks();
+  const { books, loading: listingsLoading, error: listingsError } = useBooks();
+  const {
+    collectedBooks,
+    loading: collectedLoading,
+    error: collectedError,
+  } = useBooksCollected();
+
+  const ownedListingIds = new Set(
+    collectedBooks.map((collected) => collected.listing.id),
+  );
+  const notOwnedBooks = books.filter((book) => !ownedListingIds.has(book.id));
 
   return (
     <div>
@@ -55,6 +53,45 @@ function LibraryPage() {
         </div>
       </div>
 
+      {/* Books Owned */}
+      <section className="px-8 pt-10" aria-labelledby="books-owned-heading">
+        <h3
+          id="books-owned-heading"
+          className="text-xl font-semibold mb-4 text-gray-900 dark:text-white"
+        >
+          Books Owned
+        </h3>
+
+        {collectedLoading && (
+          <p className="text-gray-500 dark:text-gray-400">
+            Loading owned books...
+          </p>
+        )}
+        {collectedError && (
+          <p className="text-red-500">{collectedError.message}</p>
+        )}
+        {!collectedLoading &&
+          !collectedError &&
+          collectedBooks.length === 0 && (
+            <p className="text-gray-500 dark:text-gray-400">
+              No books owned yet.
+            </p>
+          )}
+
+        <ul className="flex flex-col gap-4">
+          {collectedBooks.map((collected) => (
+            <LibraryBookCard
+              key={collected.id}
+              book={collected.listing}
+              owned={{
+                datePurchased: collected.datePurchased,
+                completed: collected.completed,
+              }}
+            />
+          ))}
+        </ul>
+      </section>
+
       {/* Books Not Owned */}
       <section className="px-8 pt-10" aria-labelledby="books-not-owned-heading">
         <h3
@@ -64,39 +101,16 @@ function LibraryPage() {
           Books Not Owned
         </h3>
 
-        {loading && (
+        {listingsLoading && (
           <p className="text-gray-500 dark:text-gray-400">Loading books...</p>
         )}
-        {error && <p className="text-red-500">{error.message}</p>}
+        {listingsError && (
+          <p className="text-red-500">{listingsError.message}</p>
+        )}
 
         <ul className="flex flex-col gap-4">
-          {books.map((book) => (
-            <li
-              key={book.id}
-              className="flex bg-gray-100 dark:bg-gray-800 rounded-xl p-3 gap-3 shadow"
-            >
-              <img
-                src={book.thumbnailUrl || DEFAULT_BOOK_COVER}
-                alt={`${book.title} cover`}
-                className="book-card__thumbnail rounded-lg"
-                onError={(e) => {
-                  if (e.currentTarget.src !== DEFAULT_BOOK_COVER) {
-                    e.currentTarget.src = DEFAULT_BOOK_COVER;
-                  }
-                }}
-              />
-              <div className="flex flex-col flex-1 min-w-0 py-1">
-                <h4 className="font-bold text-gray-900 dark:text-white truncate">
-                  {book.title}
-                </h4>
-                <p className="text-sm text-gray-700 dark:text-gray-300 truncate">
-                  {book.authors}
-                </p>
-                <p className="mt-auto text-xs text-gray-500 dark:text-gray-400">
-                  {formatPublicationDate(book.publishedDate)}
-                </p>
-              </div>
-            </li>
+          {notOwnedBooks.map((book) => (
+            <LibraryBookCard key={book.id} book={book} />
           ))}
         </ul>
       </section>

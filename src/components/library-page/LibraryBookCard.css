@@ -1,0 +1,26 @@
+.book-card__thumbnail {
+  width: 4rem;
+  height: 6rem;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.book-card__badge {
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 0.125rem 0.5rem;
+  border-radius: 9999px;
+  flex-shrink: 0;
+}
+
+.book-card__badge--completed {
+  background-color: rgb(209 250 229);
+  color: rgb(6 78 59);
+}
+
+.dark .book-card__badge--completed {
+  background-color: rgb(6 78 59);
+  color: rgb(209 250 229);
+}
