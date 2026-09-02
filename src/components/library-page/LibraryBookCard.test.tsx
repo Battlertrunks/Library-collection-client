@@ -51,6 +51,25 @@ describe("LibraryBookCard", () => {
     expect(html).not.toContain("Completed");
   });
 
+  it("renders an add button on not-owned cards", () => {
+    const html = renderToString(<LibraryBookCard book={book} />);
+    expect(html).toContain('aria-label="Add Dropsite Massacre to Books Owned"');
+    expect(html).not.toContain("Remove Dropsite Massacre");
+  });
+
+  it("renders a discard button on owned cards", () => {
+    const html = renderToString(
+      <LibraryBookCard
+        book={book}
+        owned={{ datePurchased: "2025-06-15T12:00:00", completed: false }}
+      />,
+    );
+    expect(html).toContain(
+      'aria-label="Remove Dropsite Massacre from Books Owned"',
+    );
+    expect(html).not.toContain("Add Dropsite Massacre");
+  });
+
   it("uses the default cover when thumbnail is missing", () => {
     const html = renderToString(<LibraryBookCard book={book} />);
     expect(html).toContain("No+Cover");
