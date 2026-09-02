@@ -11,9 +11,11 @@
     "test": "vitest"
   },
   "dependencies": {
+    "@apollo/client": "^4.2.12",
     "@tailwindcss/vite": "^4.3.3",
     "@tanstack/react-router": "^1.170.32",
     "@tanstack/router-plugin": "^1.168.35",
+    "graphql": "^17.0.2",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "tailwindcss": "^4.3.3",

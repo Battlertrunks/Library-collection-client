@@ -32,7 +32,7 @@ function CustomSelect(props: Props) {
   }, [isOpen]);
 
   return (
-    <div ref={containerRef}>
+    <div ref={containerRef} className="relative">
       <button onClick={() => setIsOpen(!isOpen)}>
         <div className="flex flex-row justify-between bg-gray-100 dark:bg-gray-800 py-2 px-2 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-offset-2 focus:ring-blue-300 text-sm min-w-40 transition-colors">
           {selectedValue.label}
@@ -53,7 +53,7 @@ function CustomSelect(props: Props) {
 
       {/* Dropdown  */}
       <ul
-        className={`shadow p-3 duration-500 transition-all bg-white dark:bg-gray-800 rounded-xl ${isOpen ? "opacity-100 scale-100" : "opacity-0 scale-95"}`}
+        className={`absolute top-full left-0 right-0 z-10 mt-2 origin-top shadow p-3 duration-500 transition-all bg-white dark:bg-gray-800 rounded-xl ${isOpen ? "opacity-100 scale-100" : "pointer-events-none opacity-0 scale-95"}`}
       >
         {options.map((option: Option, i: number) => {
           const isSelected = option.value === selectedValue.value;

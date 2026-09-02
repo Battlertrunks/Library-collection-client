@@ -4,9 +4,7 @@ import {
   createRootRoute,
   useLocation,
 } from "@tanstack/react-router";
-import { useEffect } from "react";
 import MobileNav from "../components/MobileNav";
-import { loadSettings } from "../components/settings-page/useSettings";
 
 export const Route = createRootRoute({
   component: RootComponent,

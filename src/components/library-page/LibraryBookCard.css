@@ -1,0 +1,76 @@
+.book-card__thumbnail {
+  width: 4rem;
+  height: 6rem;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.book-card__badge {
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 0.125rem 0.5rem;
+  border-radius: 9999px;
+  flex-shrink: 0;
+}
+
+.book-card__badge--completed {
+  background-color: rgb(209 250 229);
+  color: rgb(6 78 59);
+}
+
+.dark .book-card__badge--completed {
+  background-color: rgb(6 78 59);
+  color: rgb(209 250 229);
+}
+
+.book-card__action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 0.5rem;
+  flex-shrink: 0;
+  margin-left: auto;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.book-card__action-icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+.book-card__action-btn--add {
+  color: rgb(4 120 87);
+}
+
+.book-card__action-btn--add:hover {
+  background-color: rgb(209 250 229);
+}
+
+.dark .book-card__action-btn--add {
+  color: rgb(110 231 183);
+}
+
+.dark .book-card__action-btn--add:hover {
+  background-color: rgb(6 78 59);
+}
+
+.book-card__action-btn--discard {
+  color: rgb(185 28 28);
+}
+
+.book-card__action-btn--discard:hover {
+  background-color: rgb(254 226 226);
+}
+
+.dark .book-card__action-btn--discard {
+  color: rgb(248 113 113);
+}
+
+.dark .book-card__action-btn--discard:hover {
+  background-color: rgb(127 29 29);
+}

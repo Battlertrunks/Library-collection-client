@@ -4,7 +4,6 @@ function FeaturedBook() {
   const title: string = "The Horus Heresy: Know No Fear";
   const author: string = "Dan Abnett";
   const publish: number = 2019;
-  const price: number = 9.99;
 
   // TODO: Make this a link to the book once the library route has been established
   return (
@@ -26,8 +25,6 @@ function FeaturedBook() {
         <p className="font-extralight text-sm">by {author}</p>
         <div className="flex justify-center mt-2 text-base">
           <p>{publish}</p>
-          <span className="mx-2">|</span>
-          <p>{price}</p>
         </div>
       </div>
     </div>
