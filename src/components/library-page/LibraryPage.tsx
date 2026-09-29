@@ -1,6 +1,18 @@
+import { useState } from "react";
 import type { Options } from "../../types/SelectOptions";
+import type { BookListing } from "../../types/bookListing";
+import type { OwnedBookInfo } from "../../types/collectedBook";
+import useBooks from "../../api/useBooks";
+import useBooksCollected from "../../api/useBooksCollected";
 import CustomSelect from "../action-items/CustomSelect";
+import BookDetails from "../book-details/BookDetails";
+import LibraryBookCard from "./LibraryBookCard";
 import "./LibraryPage.css";
+
+type SelectedBook = {
+  book: BookListing;
+  owned?: OwnedBookInfo;
+};
 
 const options: Options = [
   { id: 1, label: "Recently Added", value: "recent" },
@@ -11,6 +23,19 @@ const options: Options = [
 ];
 
 function LibraryPage() {
+  const [selectedBook, setSelectedBook] = useState<SelectedBook | null>(null);
+  const { books, loading: listingsLoading, error: listingsError } = useBooks();
+  const {
+    collectedBooks,
+    loading: collectedLoading,
+    error: collectedError,
+  } = useBooksCollected();
+
+  const ownedListingIds = new Set(
+    collectedBooks.map((collected) => collected.listing.id),
+  );
+  const notOwnedBooks = books.filter((book) => !ownedListingIds.has(book.id));
+
   return (
     <div>
       <div className="mb-10 pt-7 text-center">
@@ -37,6 +62,89 @@ function LibraryPage() {
           <CustomSelect options={options} />
         </div>
       </div>
+
+      {/* Books Owned */}
+      <section className="px-8 pt-10" aria-labelledby="books-owned-heading">
+        <h3
+          id="books-owned-heading"
+          className="text-xl font-semibold mb-4 text-gray-900 dark:text-white"
+        >
+          Books Owned
+        </h3>
+
+        {collectedLoading && (
+          <p className="text-gray-500 dark:text-gray-400">
+            Loading owned books...
+          </p>
+        )}
+        {collectedError && (
+          <p className="text-red-500">{collectedError.message}</p>
+        )}
+        {!collectedLoading &&
+          !collectedError &&
+          collectedBooks.length === 0 && (
+            <p className="text-gray-500 dark:text-gray-400">
+              No books owned yet.
+            </p>
+          )}
+
+        <ul className="flex flex-col gap-4">
+          {collectedBooks.map((collected) => (
+            <LibraryBookCard
+              key={collected.id}
+              book={collected.listing}
+              owned={{
+                datePurchased: collected.datePurchased,
+                completed: collected.completed,
+              }}
+              onOpen={() =>
+                setSelectedBook({
+                  book: collected.listing,
+                  owned: {
+                    datePurchased: collected.datePurchased,
+                    completed: collected.completed,
+                  },
+                })
+              }
+            />
+          ))}
+        </ul>
+      </section>
+
+      {/* Books Not Owned */}
+      <section className="px-8 pt-10" aria-labelledby="books-not-owned-heading">
+        <h3
+          id="books-not-owned-heading"
+          className="text-xl font-semibold mb-4 text-gray-900 dark:text-white"
+        >
+          Books Not Owned
+        </h3>
+
+        {listingsLoading && (
+          <p className="text-gray-500 dark:text-gray-400">Loading books...</p>
+        )}
+        {listingsError && (
+          <p className="text-red-500">{listingsError.message}</p>
+        )}
+
+        <ul className="flex flex-col gap-4">
+          {notOwnedBooks.map((book) => (
+            <LibraryBookCard
+              key={book.id}
+              book={book}
+              onOpen={() => setSelectedBook({ book })}
+            />
+          ))}
+        </ul>
+      </section>
+
+      {selectedBook && (
+        <BookDetails
+          book={selectedBook.book}
+          owned={selectedBook.owned}
+          onClose={() => setSelectedBook(null)}
+        />
+      )}
     </div>
   );
 }
