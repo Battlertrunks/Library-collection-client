@@ -6,3 +6,5 @@ export type CollectedBook = {
   datePurchased: string;
   completed: boolean;
 };
+
+export type OwnedBookInfo = Pick<CollectedBook, "datePurchased" | "completed">;

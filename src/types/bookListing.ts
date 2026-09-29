@@ -4,4 +4,6 @@ export type BookListing = {
   authors: string;
   thumbnailUrl: string;
   publishedDate: string;
+  description: string;
+  genres: string;
 };

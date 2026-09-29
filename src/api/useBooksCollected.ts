@@ -33,6 +33,10 @@ function toCollectedBook(row: NonNullRow): CollectedBook {
       authors: row.authors ?? "",
       thumbnailUrl: row.thumbnail_url ?? "",
       publishedDate: row.published_date ?? "",
+      // books_collected does not expose description/genres yet, so the server
+      // cannot join them in. BookDetails falls back gracefully until it does.
+      description: "",
+      genres: "",
     },
     datePurchased: row.date_purchased ?? "",
     completed: row.completed ?? false,

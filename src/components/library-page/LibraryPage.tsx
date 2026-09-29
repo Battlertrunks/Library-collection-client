@@ -1,9 +1,18 @@
+import { useState } from "react";
 import type { Options } from "../../types/SelectOptions";
+import type { BookListing } from "../../types/bookListing";
+import type { OwnedBookInfo } from "../../types/collectedBook";
 import useBooks from "../../api/useBooks";
 import useBooksCollected from "../../api/useBooksCollected";
 import CustomSelect from "../action-items/CustomSelect";
+import BookDetails from "../book-details/BookDetails";
 import LibraryBookCard from "./LibraryBookCard";
 import "./LibraryPage.css";
+
+type SelectedBook = {
+  book: BookListing;
+  owned?: OwnedBookInfo;
+};
 
 const options: Options = [
   { id: 1, label: "Recently Added", value: "recent" },
@@ -14,6 +23,7 @@ const options: Options = [
 ];
 
 function LibraryPage() {
+  const [selectedBook, setSelectedBook] = useState<SelectedBook | null>(null);
   const { books, loading: listingsLoading, error: listingsError } = useBooks();
   const {
     collectedBooks,
@@ -87,6 +97,15 @@ function LibraryPage() {
                 datePurchased: collected.datePurchased,
                 completed: collected.completed,
               }}
+              onOpen={() =>
+                setSelectedBook({
+                  book: collected.listing,
+                  owned: {
+                    datePurchased: collected.datePurchased,
+                    completed: collected.completed,
+                  },
+                })
+              }
             />
           ))}
         </ul>
@@ -110,10 +129,22 @@ function LibraryPage() {
 
         <ul className="flex flex-col gap-4">
           {notOwnedBooks.map((book) => (
-            <LibraryBookCard key={book.id} book={book} />
+            <LibraryBookCard
+              key={book.id}
+              book={book}
+              onOpen={() => setSelectedBook({ book })}
+            />
           ))}
         </ul>
       </section>
+
+      {selectedBook && (
+        <BookDetails
+          book={selectedBook.book}
+          owned={selectedBook.owned}
+          onClose={() => setSelectedBook(null)}
+        />
+      )}
     </div>
   );
 }

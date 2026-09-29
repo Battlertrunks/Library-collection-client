@@ -195,7 +195,7 @@ function SettingsPage({ onClose }: SettingsPageProps) {
         <div
           role="status"
           aria-live="polite"
-          className={`settings-page__snackbar fixed left-1/2 -translate-x-1/2 bottom-24 px-6 py-3 rounded-xl text-sm font-medium shadow-lg ${
+          className={`settings-page__snackbar fixed bottom-24 px-6 py-3 rounded-xl text-sm font-medium shadow-lg ${
             saveStatus === "success"
               ? "bg-green-600 text-white"
               : "bg-red-600 text-white"

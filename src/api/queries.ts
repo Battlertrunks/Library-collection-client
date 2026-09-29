@@ -8,6 +8,8 @@ export const GET_BOOK_LISTINGS = gql(`
       authors
       thumbnail_url
       published_date
+      description
+      genres
     }
   }
 `);

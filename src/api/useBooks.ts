@@ -9,6 +9,8 @@ type BookListingsQueryResult = {
     authors: string | null;
     thumbnail_url: string | null;
     published_date: string | null;
+    description: string | null;
+    genres: string | null;
   } | null> | null;
 };
 
@@ -28,6 +30,8 @@ function toBookListing(
     authors: listing.authors ?? "",
     thumbnailUrl: listing.thumbnail_url ?? "",
     publishedDate: listing.published_date ?? "",
+    description: listing.description ?? "",
+    genres: listing.genres ?? "",
   };
 }
 

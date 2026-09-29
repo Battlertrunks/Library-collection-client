@@ -5,6 +5,19 @@
   flex-shrink: 0;
 }
 
+.book-card__title-btn {
+  min-width: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+}
+
+.book-card__title-btn:hover {
+  text-decoration: underline;
+}
+
 .book-card__badge {
   font-size: 0.65rem;
   font-weight: 600;
