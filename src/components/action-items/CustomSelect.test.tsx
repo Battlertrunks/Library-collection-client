@@ -1,5 +1,7 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi, afterEach } from "vitest";
 import { renderToString } from "react-dom/server";
+import { createRoot, type Root } from "react-dom/client";
+import { act, type ReactElement } from "react";
 import CustomSelect from "./CustomSelect";
 import { type Option } from "../../types/SelectOptions";
 
@@ -37,5 +39,62 @@ describe("CustomSelect", () => {
   it("renders a list element for the dropdown", () => {
     const html = renderToString(<CustomSelect options={mockOptions} />);
     expect(html).toContain("<ul");
+  });
+
+  describe("onChange", () => {
+    let container: HTMLDivElement;
+    let root: Root;
+
+    function render(ui: ReactElement) {
+      container = document.createElement("div");
+      document.body.appendChild(container);
+      root = createRoot(container);
+      act(() => {
+        root.render(ui);
+      });
+    }
+
+    function optionElement(label: string): HTMLElement {
+      return Array.from(container.querySelectorAll("li")).find((li) =>
+        li.textContent?.includes(label),
+      )! as HTMLElement;
+    }
+
+    afterEach(() => {
+      if (root) {
+        act(() => {
+          root.unmount();
+        });
+      }
+      if (container?.parentNode) {
+        container.parentNode.removeChild(container);
+      }
+    });
+
+    it("calls onChange with the selected option", () => {
+      const onChange = vi.fn();
+      render(<CustomSelect options={mockOptions} onChange={onChange} />);
+
+      act(() => {
+        (container.querySelector("button") as HTMLButtonElement).click();
+      });
+      act(() => {
+        optionElement("Option 2").click();
+      });
+
+      expect(onChange).toHaveBeenCalledOnce();
+      expect(onChange).toHaveBeenCalledWith(mockOptions[1]);
+    });
+
+    it("does not call onChange while the dropdown is closed", () => {
+      const onChange = vi.fn();
+      render(<CustomSelect options={mockOptions} onChange={onChange} />);
+
+      act(() => {
+        optionElement("Option 2").click();
+      });
+
+      expect(onChange).not.toHaveBeenCalled();
+    });
   });
 });

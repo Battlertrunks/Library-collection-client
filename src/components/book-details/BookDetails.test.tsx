@@ -13,6 +13,7 @@ const book: BookListing = {
   publishedDate: "2024-01-01T12:00:00",
   description: "A tale of the Isstvan V dropsite.",
   genres: "Fiction, Science Fiction",
+  createdAt: "2024-01-15T12:00:00",
 };
 
 describe("BookDetails", () => {

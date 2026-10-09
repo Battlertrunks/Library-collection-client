@@ -12,6 +12,7 @@ type BooksCollectedQueryResult = {
     authors: string | null;
     thumbnail_url: string | null;
     published_date: string | null;
+    created_at: string | null;
   } | null> | null;
 };
 
@@ -37,6 +38,7 @@ function toCollectedBook(row: NonNullRow): CollectedBook {
       // cannot join them in. BookDetails falls back gracefully until it does.
       description: "",
       genres: "",
+      createdAt: row.created_at ?? "",
     },
     datePurchased: row.date_purchased ?? "",
     completed: row.completed ?? false,

@@ -10,6 +10,7 @@ export const GET_BOOK_LISTINGS = gql(`
       published_date
       description
       genres
+      created_at
     }
   }
 `);
@@ -28,6 +29,7 @@ export const GET_BOOKS_COLLECTED = gql(`
       authors
       thumbnail_url
       published_date
+      created_at
     }
   }
 `);

@@ -4,10 +4,11 @@ import type { Option, Options } from "../../types/SelectOptions";
 
 type Props = {
   options: Options;
+  onChange?: (option: Option) => void;
 };
 
 function CustomSelect(props: Props) {
-  const { options } = props;
+  const { options, onChange } = props;
 
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [selectedValue, setSelectedValue] = useState<Option>(options[0]);
@@ -64,6 +65,7 @@ function CustomSelect(props: Props) {
               onClick={() => {
                 if (isOpen) {
                   setSelectedValue(option);
+                  onChange?.(option);
                 }
               }}
             >

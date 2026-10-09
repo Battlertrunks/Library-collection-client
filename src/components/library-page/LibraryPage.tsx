@@ -7,6 +7,8 @@ import useBooksCollected from "../../api/useBooksCollected";
 import CustomSelect from "../action-items/CustomSelect";
 import BookDetails from "../book-details/BookDetails";
 import LibraryBookCard from "./LibraryBookCard";
+import { filterBooks } from "./filterBooks";
+import { sortBooks, type SortValue } from "./sortBooks";
 import "./LibraryPage.css";
 
 type SelectedBook = {
@@ -17,13 +19,15 @@ type SelectedBook = {
 const options: Options = [
   { id: 1, label: "Recently Added", value: "recent" },
   { id: 2, label: "Name A to Z", value: "az" },
-  { id: 2, label: "Name Z to A", value: "za" },
-  { id: 3, label: "Date Published", value: "publish" },
-  { id: 4, label: "Completion", value: "completion" },
+  { id: 3, label: "Name Z to A", value: "za" },
+  { id: 4, label: "Date Published", value: "publish" },
+  { id: 5, label: "Completion", value: "completion" },
 ];
 
 function LibraryPage() {
   const [selectedBook, setSelectedBook] = useState<SelectedBook | null>(null);
+  const [sortValue, setSortValue] = useState<SortValue>("recent");
+  const [searchQuery, setSearchQuery] = useState("");
   const { books, loading: listingsLoading, error: listingsError } = useBooks();
   const {
     collectedBooks,
@@ -35,6 +39,27 @@ function LibraryPage() {
     collectedBooks.map((collected) => collected.listing.id),
   );
   const notOwnedBooks = books.filter((book) => !ownedListingIds.has(book.id));
+
+  const sortedCollectedBooks = sortBooks(
+    filterBooks(
+      collectedBooks.map((collected) => ({
+        book: collected.listing,
+        owned: {
+          datePurchased: collected.datePurchased,
+          completed: collected.completed,
+        } satisfies OwnedBookInfo,
+      })),
+      searchQuery,
+    ),
+    sortValue,
+  );
+  const sortedNotOwnedBooks = sortBooks(
+    filterBooks(
+      notOwnedBooks.map((book) => ({ book })),
+      searchQuery,
+    ),
+    sortValue,
+  );
 
   return (
     <div>
@@ -54,12 +79,18 @@ function LibraryPage() {
           <input
             type="text"
             placeholder="Looking for..."
+            aria-label="Search books by title or author"
+            value={searchQuery}
+            onChange={(event) => setSearchQuery(event.target.value)}
             className="bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white placeholder:text-gray-500 search-inp py-2 pl-2 rounded-xl text-sm"
           />
         </div>
         <div>
           <span>Sort By:</span>
-          <CustomSelect options={options} />
+          <CustomSelect
+            options={options}
+            onChange={(option) => setSortValue(option.value as SortValue)}
+          />
         </div>
       </div>
 
@@ -89,23 +120,12 @@ function LibraryPage() {
           )}
 
         <ul className="flex flex-col gap-4">
-          {collectedBooks.map((collected) => (
+          {sortedCollectedBooks.map(({ book, owned }) => (
             <LibraryBookCard
-              key={collected.id}
-              book={collected.listing}
-              owned={{
-                datePurchased: collected.datePurchased,
-                completed: collected.completed,
-              }}
-              onOpen={() =>
-                setSelectedBook({
-                  book: collected.listing,
-                  owned: {
-                    datePurchased: collected.datePurchased,
-                    completed: collected.completed,
-                  },
-                })
-              }
+              key={book.id}
+              book={book}
+              owned={owned}
+              onOpen={() => setSelectedBook({ book, owned })}
             />
           ))}
         </ul>
@@ -128,7 +148,7 @@ function LibraryPage() {
         )}
 
         <ul className="flex flex-col gap-4">
-          {notOwnedBooks.map((book) => (
+          {sortedNotOwnedBooks.map(({ book }) => (
             <LibraryBookCard
               key={book.id}
               book={book}

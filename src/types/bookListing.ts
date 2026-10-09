@@ -6,4 +6,5 @@ export type BookListing = {
   publishedDate: string;
   description: string;
   genres: string;
+  createdAt: string;
 };

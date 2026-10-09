@@ -11,6 +11,7 @@ type BookListingsQueryResult = {
     published_date: string | null;
     description: string | null;
     genres: string | null;
+    created_at: string | null;
   } | null> | null;
 };
 
@@ -32,6 +33,7 @@ function toBookListing(
     publishedDate: listing.published_date ?? "",
     description: listing.description ?? "",
     genres: listing.genres ?? "",
+    createdAt: listing.created_at ?? "",
   };
 }
 
