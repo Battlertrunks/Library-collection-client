@@ -22,6 +22,9 @@ export function createCache() {
 }
 
 export const client = new ApolloClient({
-  link: new HttpLink({ uri: "http://localhost:3000/graphql" }),
+  // Relative so the browser stays same-origin: Vite proxies /graphql to the
+  // API in dev, and production serves both behind one origin. Avoids the CORS
+  // preflight (an extra OPTIONS request) on every query.
+  link: new HttpLink({ uri: "/graphql" }),
   cache: createCache(),
 });
