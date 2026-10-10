@@ -1,14 +1,16 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Options } from "../../types/SelectOptions";
 import type { BookListing } from "../../types/bookListing";
 import type { OwnedBookInfo } from "../../types/collectedBook";
+import type { BookSort } from "../../types/bookSort";
 import useBooks from "../../api/useBooks";
 import useBooksCollected from "../../api/useBooksCollected";
+import { useDebouncedValue } from "../../hooks/useDebouncedValue";
 import CustomSelect from "../action-items/CustomSelect";
 import BookDetails from "../book-details/BookDetails";
 import LibraryBookCard from "./LibraryBookCard";
-import { filterBooks } from "./filterBooks";
-import { sortBooks, type SortValue } from "./sortBooks";
+import EndOfListMessage from "./EndOfListMessage";
+import { useInfiniteScroll } from "./useInfiniteScroll";
 import "./LibraryPage.css";
 
 type SelectedBook = {
@@ -16,53 +18,72 @@ type SelectedBook = {
   owned?: OwnedBookInfo;
 };
 
+/** Milliseconds to wait after the last keystroke before querying the server. */
+const SEARCH_DEBOUNCE_MS = 300;
+
 const options: Options = [
-  { id: 1, label: "Recently Added", value: "recent" },
-  { id: 2, label: "Name A to Z", value: "az" },
-  { id: 3, label: "Name Z to A", value: "za" },
-  { id: 4, label: "Date Published", value: "publish" },
-  { id: 5, label: "Completion", value: "completion" },
+  { id: 1, label: "Recently Added", value: "RECENT" },
+  { id: 2, label: "Name A to Z", value: "TITLE_ASC" },
+  { id: 3, label: "Name Z to A", value: "TITLE_DESC" },
+  { id: 4, label: "Date Published", value: "PUBLISHED" },
+  { id: 5, label: "Completion", value: "COMPLETION" },
 ];
 
 function LibraryPage() {
   const [selectedBook, setSelectedBook] = useState<SelectedBook | null>(null);
-  const [sortValue, setSortValue] = useState<SortValue>("recent");
+  const [sortValue, setSortValue] = useState<BookSort>("RECENT");
   const [searchQuery, setSearchQuery] = useState("");
-  const { books, loading: listingsLoading, error: listingsError } = useBooks();
+  const debouncedSearch = useDebouncedValue(searchQuery, SEARCH_DEBOUNCE_MS);
+
+  const {
+    books,
+    loading: listingsLoading,
+    loadingMore: listingsLoadingMore,
+    error: listingsError,
+    hasNextPage: listingsHaveMore,
+    loadMore: loadMoreListings,
+  } = useBooks({ search: debouncedSearch, sort: sortValue });
+
   const {
     collectedBooks,
     loading: collectedLoading,
+    loadingMore: collectedLoadingMore,
     error: collectedError,
-  } = useBooksCollected();
+    hasNextPage: collectedHaveMore,
+    loadMore: loadMoreCollected,
+  } = useBooksCollected({ search: debouncedSearch, sort: sortValue });
 
-  const ownedListingIds = new Set(
-    collectedBooks.map((collected) => collected.listing.id),
+  const listingsSentinelRef = useInfiniteScroll(
+    loadMoreListings,
+    listingsHaveMore && !listingsLoading && !listingsLoadingMore,
+    books.length,
   );
-  const notOwnedBooks = books.filter((book) => !ownedListingIds.has(book.id));
+  const collectedSentinelRef = useInfiniteScroll(
+    loadMoreCollected,
+    collectedHaveMore && !collectedLoading && !collectedLoadingMore,
+    collectedBooks.length,
+  );
 
-  const sortedCollectedBooks = sortBooks(
-    filterBooks(
-      collectedBooks.map((collected) => ({
-        book: collected.listing,
-        owned: {
-          datePurchased: collected.datePurchased,
-          completed: collected.completed,
-        } satisfies OwnedBookInfo,
-      })),
-      searchQuery,
-    ),
-    sortValue,
-  );
-  const sortedNotOwnedBooks = sortBooks(
-    filterBooks(
-      notOwnedBooks.map((book) => ({ book })),
-      searchQuery,
-    ),
-    sortValue,
-  );
+  // A new search or sort starts a fresh first page; take the user back to it.
+  const previousQueryRef = useRef(`${sortValue}\u0000${debouncedSearch}`);
+  useEffect(() => {
+    const queryKey = `${sortValue}\u0000${debouncedSearch}`;
+    if (previousQueryRef.current === queryKey) {
+      return;
+    }
+    previousQueryRef.current = queryKey;
+    window.scrollTo({ top: 0 });
+  }, [debouncedSearch, sortValue]);
+
+  const hasAnyBooks = books.length > 0 || collectedBooks.length > 0;
+  const allListsLoaded =
+    !listingsLoading &&
+    !collectedLoading &&
+    !listingsHaveMore &&
+    !collectedHaveMore;
 
   return (
-    <div>
+    <div className="pb-24">
       <div className="mb-10 pt-7 text-center">
         <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">
           Your Collection
@@ -89,7 +110,7 @@ function LibraryPage() {
           <span>Sort By:</span>
           <CustomSelect
             options={options}
-            onChange={(option) => setSortValue(option.value as SortValue)}
+            onChange={(option) => setSortValue(option.value as BookSort)}
           />
         </div>
       </div>
@@ -103,7 +124,7 @@ function LibraryPage() {
           Books Owned
         </h3>
 
-        {collectedLoading && (
+        {collectedLoading && collectedBooks.length === 0 && (
           <p className="text-gray-500 dark:text-gray-400">
             Loading owned books...
           </p>
@@ -115,20 +136,40 @@ function LibraryPage() {
           !collectedError &&
           collectedBooks.length === 0 && (
             <p className="text-gray-500 dark:text-gray-400">
-              No books owned yet.
+              {debouncedSearch
+                ? "No owned books match your search."
+                : "No books owned yet."}
             </p>
           )}
 
         <ul className="flex flex-col gap-4">
-          {sortedCollectedBooks.map(({ book, owned }) => (
+          {collectedBooks.map((collected) => (
             <LibraryBookCard
-              key={book.id}
-              book={book}
-              owned={owned}
-              onOpen={() => setSelectedBook({ book, owned })}
+              key={collected.id}
+              book={collected.listing}
+              owned={{
+                datePurchased: collected.datePurchased,
+                completed: collected.completed,
+              }}
+              onOpen={() =>
+                setSelectedBook({
+                  book: collected.listing,
+                  owned: {
+                    datePurchased: collected.datePurchased,
+                    completed: collected.completed,
+                  },
+                })
+              }
             />
           ))}
         </ul>
+        {collectedHaveMore && (
+          <div
+            ref={collectedSentinelRef}
+            className="book-list__sentinel"
+            aria-hidden="true"
+          />
+        )}
       </section>
 
       {/* Books Not Owned */}
@@ -140,15 +181,22 @@ function LibraryPage() {
           Books Not Owned
         </h3>
 
-        {listingsLoading && (
+        {listingsLoading && books.length === 0 && (
           <p className="text-gray-500 dark:text-gray-400">Loading books...</p>
         )}
         {listingsError && (
           <p className="text-red-500">{listingsError.message}</p>
         )}
+        {!listingsLoading && !listingsError && books.length === 0 && (
+          <p className="text-gray-500 dark:text-gray-400">
+            {debouncedSearch
+              ? "No other books match your search."
+              : "No other books in the library."}
+          </p>
+        )}
 
         <ul className="flex flex-col gap-4">
-          {sortedNotOwnedBooks.map(({ book }) => (
+          {books.map((book) => (
             <LibraryBookCard
               key={book.id}
               book={book}
@@ -156,7 +204,16 @@ function LibraryPage() {
             />
           ))}
         </ul>
+        {listingsHaveMore && (
+          <div
+            ref={listingsSentinelRef}
+            className="book-list__sentinel"
+            aria-hidden="true"
+          />
+        )}
       </section>
+
+      {hasAnyBooks && allListsLoaded && <EndOfListMessage />}
 
       {selectedBook && (
         <BookDetails
