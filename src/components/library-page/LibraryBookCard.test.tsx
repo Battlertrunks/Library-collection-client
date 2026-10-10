@@ -158,4 +158,87 @@ describe("LibraryBookCard", () => {
       expect(onOpen).not.toHaveBeenCalled();
     });
   });
+
+  describe("action interactions", () => {
+    let container: HTMLDivElement;
+    let root: Root;
+
+    function render(ui: ReactElement) {
+      container = document.createElement("div");
+      document.body.appendChild(container);
+      root = createRoot(container);
+      act(() => {
+        root.render(ui);
+      });
+    }
+
+    afterEach(() => {
+      if (root) {
+        act(() => {
+          root.unmount();
+        });
+      }
+      if (container?.parentNode) {
+        container.parentNode.removeChild(container);
+      }
+    });
+
+    it("calls onAdd when the add button is clicked", () => {
+      const onAdd = vi.fn();
+      render(<LibraryBookCard book={book} onAdd={onAdd} />);
+
+      const addBtn = container.querySelector(
+        ".book-card__action-btn--add",
+      )! as HTMLElement;
+      act(() => {
+        addBtn.click();
+      });
+
+      expect(onAdd).toHaveBeenCalledOnce();
+    });
+
+    it("calls onRemove when the discard button is clicked", () => {
+      const onRemove = vi.fn();
+      render(
+        <LibraryBookCard
+          book={book}
+          owned={{ datePurchased: "2025-06-15T12:00:00", completed: false }}
+          onRemove={onRemove}
+        />,
+      );
+
+      const discardBtn = container.querySelector(
+        ".book-card__action-btn--discard",
+      )! as HTMLElement;
+      act(() => {
+        discardBtn.click();
+      });
+
+      expect(onRemove).toHaveBeenCalledOnce();
+    });
+
+    it("disables the add button while an action is pending", () => {
+      render(<LibraryBookCard book={book} disabled />);
+
+      const addBtn = container.querySelector(
+        ".book-card__action-btn--add",
+      )! as HTMLButtonElement;
+      expect(addBtn.disabled).toBe(true);
+    });
+
+    it("disables the discard button while an action is pending", () => {
+      render(
+        <LibraryBookCard
+          book={book}
+          owned={{ datePurchased: "2025-06-15T12:00:00", completed: false }}
+          disabled
+        />,
+      );
+
+      const discardBtn = container.querySelector(
+        ".book-card__action-btn--discard",
+      )! as HTMLButtonElement;
+      expect(discardBtn.disabled).toBe(true);
+    });
+  });
 });

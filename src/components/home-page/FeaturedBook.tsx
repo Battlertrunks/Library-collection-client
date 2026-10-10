@@ -1,9 +1,20 @@
+import type { BookOfTheDay } from "../../types/bookOfTheDay";
+import { DEFAULT_BOOK_COVER } from "../../utils/bookFormat";
 import "./FeaturedBook.css";
 
-function FeaturedBook() {
-  const title: string = "The Horus Heresy: Know No Fear";
-  const author: string = "Dan Abnett";
-  const publish: number = 2019;
+type Props = {
+  book: BookOfTheDay | null;
+  loading: boolean;
+  error: Error | null;
+};
+
+/** Extracts the publish year from a listing's published date, if present. */
+function publishYear(publishedDate: string): string {
+  return publishedDate.match(/^\d{4}/)?.[0] ?? "";
+}
+
+function FeaturedBook({ book, loading, error }: Props) {
+  const year: string = book ? publishYear(book.publishedDate) : "";
 
   // TODO: Make this a link to the book once the library route has been established
   return (
@@ -13,19 +24,42 @@ function FeaturedBook() {
       </h2>
 
       <div className="bg-gray-100 dark:bg-gray-800 rounded-xl mt-4 text-center py-4 shadow">
-        <div className="py-4">
-          <img
-            className="featured-book__cover ml-3 mx-auto inline-block rounded-2xl"
-            src="http://books.google.com/books/content?id=bOAw0QEACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
-            alt="Books Widget"
-          />
-        </div>
+        {loading && (
+          <p className="py-4 text-gray-500 dark:text-gray-400">
+            Picking a book for today...
+          </p>
+        )}
+        {error && <p className="py-4 text-red-500">{error.message}</p>}
+        {!loading && !error && !book && (
+          <p className="py-4 text-gray-500 dark:text-gray-400">
+            Collect a book and start reading to see it featured here.
+          </p>
+        )}
 
-        <h4 className="font-bold text-lg">{title}</h4>
-        <p className="font-extralight text-sm">by {author}</p>
-        <div className="flex justify-center mt-2 text-base">
-          <p>{publish}</p>
-        </div>
+        {book && (
+          <>
+            <div className="py-4">
+              <img
+                className="featured-book__cover ml-3 mx-auto inline-block rounded-2xl"
+                src={book.thumbnailUrl || DEFAULT_BOOK_COVER}
+                alt={`${book.title} cover`}
+                onError={(event) => {
+                  if (event.currentTarget.src !== DEFAULT_BOOK_COVER) {
+                    event.currentTarget.src = DEFAULT_BOOK_COVER;
+                  }
+                }}
+              />
+            </div>
+
+            <h4 className="font-bold text-lg">{book.title}</h4>
+            <p className="font-extralight text-sm">by {book.authors}</p>
+            {year && (
+              <div className="flex justify-center mt-2 text-base">
+                <p>{year}</p>
+              </div>
+            )}
+          </>
+        )}
       </div>
     </div>
   );

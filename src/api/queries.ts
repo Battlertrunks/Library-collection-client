@@ -43,12 +43,14 @@ export const GET_BOOKS_COLLECTED = gql(`
     $after: String
     $search: String
     $sort: BookSort
+    $completed: Boolean
   ) {
     books_collected(
       first: $first
       after: $after
       search: $search
       sort: $sort
+      completed: $completed
     ) {
       edges {
         node {
@@ -56,6 +58,7 @@ export const GET_BOOKS_COLLECTED = gql(`
           book_listing_id
           date_purchased
           completed
+          progress
           title
           authors
           thumbnail_url
@@ -68,6 +71,20 @@ export const GET_BOOKS_COLLECTED = gql(`
         hasNextPage
         endCursor
       }
+    }
+  }
+`);
+
+// Deterministic daily pick served by the API; null when no owned book is in
+// progress. No variables: the server decides from the current date.
+export const GET_BOOK_OF_THE_DAY = gql(`
+  query GetBookOfTheDay {
+    book_of_the_day {
+      id
+      title
+      authors
+      thumbnail_url
+      published_date
     }
   }
 `);

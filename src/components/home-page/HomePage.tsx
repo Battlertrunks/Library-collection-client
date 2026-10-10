@@ -1,20 +1,35 @@
+import useBooksCollected from "../../api/useBooksCollected";
+import useBookOfTheDay from "../../api/useBookOfTheDay";
 import ProgressChart from "./ProgressChart";
 import BooksWidget from "./BooksWidget";
 import FeaturedBook from "./FeaturedBook";
 import "./HomePage.css";
 
-const HomePage = () => {
-  const progressItems = [
-    {
-      title: "Books Collected",
-      author: "Aron Dembski-Bowden",
-      completionAmount: 50,
-    },
-    { title: "Series Completed", author: "Bob", completionAmount: 75 },
-    { title: "Upcoming Releases", author: "Alice", completionAmount: 20 },
-  ];
+/** Number of in-progress books shown in the Progress so far section. */
+const HOME_PROGRESS_LIMIT: number = 3;
 
+const HomePage = () => {
   const username: string = "BattlerTrunks"; // TODO: Get username from server...
+
+  // Closest to completion first, with finished books filtered out.
+  const {
+    collectedBooks,
+    loading: progressLoading,
+    error: progressError,
+  } = useBooksCollected({
+    search: "",
+    sort: "COMPLETION",
+    completed: false,
+    first: HOME_PROGRESS_LIMIT,
+  });
+
+  const {
+    book: featuredBook,
+    loading: featuredLoading,
+    error: featuredError,
+  } = useBookOfTheDay();
+
+  const progressItems = collectedBooks.slice(0, HOME_PROGRESS_LIMIT);
 
   // TODO: Should there be animation effects in this project?
 
@@ -79,17 +94,28 @@ const HomePage = () => {
         <h2 className="text-3xl font-bold mb-2 text-gray-900 dark:text-white text-left">
           Progress so far...
         </h2>
+
+        {progressLoading && progressItems.length === 0 && (
+          <p className="text-left text-gray-500 dark:text-gray-400">
+            Loading your progress...
+          </p>
+        )}
+        {progressError && (
+          <p className="text-left text-red-500">{progressError.message}</p>
+        )}
+        {!progressLoading && !progressError && progressItems.length === 0 && (
+          <p className="text-left text-gray-500 dark:text-gray-400">
+            No books in progress yet.
+          </p>
+        )}
+
         <ul>
-          {progressItems.map((item, index) => (
+          {progressItems.map((item) => (
             <li
-              key={index}
+              key={item.id}
               className="text-left text-lg text-gray-700 dark:text-gray-300 mb-1"
             >
-              <BooksWidget
-                title={item.title}
-                author={item.author}
-                completionAmount={item.completionAmount}
-              />
+              <BooksWidget book={item.listing} progress={item.progress} />
             </li>
           ))}
         </ul>
@@ -99,7 +125,11 @@ const HomePage = () => {
 
       {/* Book of the Day*/}
       <section>
-        <FeaturedBook />
+        <FeaturedBook
+          book={featuredBook}
+          loading={featuredLoading}
+          error={featuredError ?? null}
+        />
       </section>
     </div>
   );

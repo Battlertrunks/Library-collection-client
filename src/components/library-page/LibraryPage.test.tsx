@@ -45,6 +45,15 @@ vi.mock("../../api/useBooksCollected", () => ({
   },
 }));
 
+vi.mock("../../api/useBookCollectionActions", () => ({
+  default: () => ({
+    addToOwned: vi.fn(),
+    removeFromOwned: vi.fn(),
+    pendingId: null,
+    error: null,
+  }),
+}));
+
 /**
  * jsdom has no IntersectionObserver, so tests capture the sentinel observers
  * and fire intersection callbacks by hand.
@@ -106,6 +115,7 @@ function makeCollected(id: string, title: string): CollectedBook {
     listing: makeListing(`listing-${id}`, title),
     datePurchased: "2025-01-01",
     completed: false,
+    progress: 0,
   };
 }
 

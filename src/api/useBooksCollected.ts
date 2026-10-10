@@ -10,6 +10,7 @@ type BooksCollectedNode = {
   book_listing_id: string | null;
   date_purchased: string | null;
   completed: boolean | null;
+  progress: number | null;
   title: string | null;
   authors: string | null;
   thumbnail_url: string | null;
@@ -27,6 +28,10 @@ type BooksCollectedQueryResult = {
 type UseBooksCollectedOptions = {
   search: string;
   sort: BookSort;
+  /** When set, only books with this finished state are returned. */
+  completed?: boolean;
+  /** Rows fetched per request; defaults to the shared page size. */
+  first?: number;
 };
 
 /**
@@ -51,6 +56,7 @@ function toCollectedBook(node: BooksCollectedNode): CollectedBook {
     },
     datePurchased: node.date_purchased ?? "",
     completed: node.completed ?? false,
+    progress: node.progress ?? 0,
   };
 }
 
@@ -58,13 +64,29 @@ function toCollectedBook(node: BooksCollectedNode): CollectedBook {
  * Custom hook to fetch one cursor-paginated page of collected (owned) books
  * from the GraphQL API. Series-level purchases are excluded server-side; they
  * belong to the series context, not the Books Owned section.
- * @param options The server-side search and sort to apply.
+ * @param options The server-side search, sort, finished-state filter, and page size to apply.
  * @returns The loaded collected books, loading/error state, and loadMore.
  */
-function useBooksCollected({ search, sort }: UseBooksCollectedOptions) {
+function useBooksCollected({
+  search,
+  sort,
+  completed,
+  first,
+}: UseBooksCollectedOptions) {
+  const pageSize: number = first ?? BOOK_PAGE_SIZE;
+
+  // Omitted when unset so the query contract stays stable for callers that
+  // do not filter by finished state (the server treats a missing arg as null).
+  const baseVariables = {
+    first: pageSize,
+    search,
+    sort,
+    ...(completed === undefined ? {} : { completed }),
+  };
+
   const { loading, error, data, fetchMore, networkStatus } =
     useQuery<BooksCollectedQueryResult>(GET_BOOKS_COLLECTED, {
-      variables: { first: BOOK_PAGE_SIZE, search, sort },
+      variables: baseVariables,
       notifyOnNetworkStatusChange: true,
     });
 
@@ -80,9 +102,7 @@ function useBooksCollected({ search, sort }: UseBooksCollectedOptions) {
     }
     void fetchMore({
       variables: {
-        first: BOOK_PAGE_SIZE,
-        search,
-        sort,
+        ...baseVariables,
         after: pageInfo.endCursor,
       },
     }).catch(() => {

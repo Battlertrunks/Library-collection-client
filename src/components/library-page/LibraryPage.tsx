@@ -5,9 +5,11 @@ import type { OwnedBookInfo } from "../../types/collectedBook";
 import type { BookSort } from "../../types/bookSort";
 import useBooks from "../../api/useBooks";
 import useBooksCollected from "../../api/useBooksCollected";
+import useBookCollectionActions from "../../api/useBookCollectionActions";
 import { useDebouncedValue } from "../../hooks/useDebouncedValue";
 import CustomSelect from "../action-items/CustomSelect";
 import BookDetails from "../book-details/BookDetails";
+import ConfirmRemoveModal from "./ConfirmRemoveModal";
 import LibraryBookCard from "./LibraryBookCard";
 import EndOfListMessage from "./EndOfListMessage";
 import { useInfiniteScroll } from "./useInfiniteScroll";
@@ -31,9 +33,16 @@ const options: Options = [
 
 function LibraryPage() {
   const [selectedBook, setSelectedBook] = useState<SelectedBook | null>(null);
+  const [bookToRemove, setBookToRemove] = useState<BookListing | null>(null);
   const [sortValue, setSortValue] = useState<BookSort>("RECENT");
   const [searchQuery, setSearchQuery] = useState("");
   const debouncedSearch = useDebouncedValue(searchQuery, SEARCH_DEBOUNCE_MS);
+  const {
+    addToOwned,
+    removeFromOwned,
+    pendingId,
+    error: collectionError,
+  } = useBookCollectionActions();
 
   const {
     books,
@@ -82,6 +91,19 @@ function LibraryPage() {
     !listingsHaveMore &&
     !collectedHaveMore;
 
+  function handleAdd(book: BookListing) {
+    void addToOwned(book.id);
+  }
+
+  function handleConfirmRemove() {
+    if (!bookToRemove) {
+      return;
+    }
+    const bookListingId = bookToRemove.id;
+    setBookToRemove(null);
+    void removeFromOwned(bookListingId);
+  }
+
   return (
     <div className="pb-24">
       <div className="mb-10 pt-7 text-center">
@@ -114,6 +136,12 @@ function LibraryPage() {
           />
         </div>
       </div>
+
+      {collectionError && (
+        <p role="alert" className="mx-8 mt-6 text-red-500">
+          {collectionError}
+        </p>
+      )}
 
       {/* Books Owned */}
       <section className="px-8 pt-10" aria-labelledby="books-owned-heading">
@@ -151,6 +179,8 @@ function LibraryPage() {
                 datePurchased: collected.datePurchased,
                 completed: collected.completed,
               }}
+              disabled={pendingId === collected.listing.id}
+              onRemove={() => setBookToRemove(collected.listing)}
               onOpen={() =>
                 setSelectedBook({
                   book: collected.listing,
@@ -200,6 +230,8 @@ function LibraryPage() {
             <LibraryBookCard
               key={book.id}
               book={book}
+              disabled={pendingId === book.id}
+              onAdd={() => handleAdd(book)}
               onOpen={() => setSelectedBook({ book })}
             />
           ))}
@@ -220,6 +252,14 @@ function LibraryPage() {
           book={selectedBook.book}
           owned={selectedBook.owned}
           onClose={() => setSelectedBook(null)}
+        />
+      )}
+
+      {bookToRemove && (
+        <ConfirmRemoveModal
+          bookTitle={bookToRemove.title}
+          onConfirm={handleConfirmRemove}
+          onClose={() => setBookToRemove(null)}
         />
       )}
     </div>

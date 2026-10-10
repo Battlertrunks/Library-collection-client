@@ -8,9 +8,19 @@ type LibraryBookCardProps = {
   book: BookListing;
   owned?: OwnedBookInfo;
   onOpen?: () => void;
+  onAdd?: () => void;
+  onRemove?: () => void;
+  disabled?: boolean;
 };
 
-function LibraryBookCard({ book, owned, onOpen }: LibraryBookCardProps) {
+function LibraryBookCard({
+  book,
+  owned,
+  onOpen,
+  onAdd,
+  onRemove,
+  disabled = false,
+}: LibraryBookCardProps) {
   return (
     <li className="flex bg-gray-100 dark:bg-gray-800 rounded-xl p-3 gap-3 shadow">
       <img
@@ -41,6 +51,8 @@ function LibraryBookCard({ book, owned, onOpen }: LibraryBookCardProps) {
           {owned ? (
             <button
               type="button"
+              onClick={onRemove}
+              disabled={disabled}
               className="book-card__action-btn book-card__action-btn--discard"
               aria-label={`Remove ${book.title} from Books Owned`}
             >
@@ -49,6 +61,8 @@ function LibraryBookCard({ book, owned, onOpen }: LibraryBookCardProps) {
           ) : (
             <button
               type="button"
+              onClick={onAdd}
+              disabled={disabled}
               className="book-card__action-btn book-card__action-btn--add"
               aria-label={`Add ${book.title} to Books Owned`}
             >

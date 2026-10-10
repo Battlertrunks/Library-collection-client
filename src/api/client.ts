@@ -14,7 +14,11 @@ export function createCache() {
           // One cache entry per search/sort combination keeps the pages of
           // different views from bleeding into each other.
           book_listings: relayStylePagination(["search", "sort"]),
-          books_collected: relayStylePagination(["search", "sort"]),
+          books_collected: relayStylePagination([
+            "search",
+            "sort",
+            "completed",
+          ]),
         },
       },
     },
