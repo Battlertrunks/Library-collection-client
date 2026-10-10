@@ -1,14 +1,17 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { renderToString } from "react-dom/server";
 import FeaturedBook from "./FeaturedBook";
-import type { BookOfTheDay } from "../../types/bookOfTheDay";
+import type { BookListing } from "../../types/bookListing";
 
-const book: BookOfTheDay = {
+const book: BookListing = {
   id: "1",
   title: "The Horus Heresy: Know No Fear",
   authors: "Dan Abnett",
   thumbnailUrl: "https://covers.example/know-no-fear.jpg",
   publishedDate: "2019-02-26",
+  description: "",
+  genres: "",
+  createdAt: "2026-01-01",
 };
 
 describe("FeaturedBook", () => {
@@ -72,6 +75,22 @@ describe("FeaturedBook", () => {
       <FeaturedBook book={book} loading={false} error={null} />,
     );
     expect(html).toContain('class="mt-10"');
+  });
+
+  it("renders the card as a Book Details dialog trigger", () => {
+    const html = renderToString(
+      <FeaturedBook
+        book={book}
+        loading={false}
+        error={null}
+        onOpen={vi.fn()}
+      />,
+    );
+    expect(html).toContain("featured-book__card");
+    expect(html).toContain('aria-haspopup="dialog"');
+    expect(html).toContain(
+      'aria-label="Open details for The Horus Heresy: Know No Fear"',
+    );
   });
 
   it("shows a loading message while the pick is fetched", () => {

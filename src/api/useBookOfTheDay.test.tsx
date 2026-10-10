@@ -17,6 +17,9 @@ const bookMock = {
         authors: "Dan Abnett",
         thumbnail_url: "https://covers.example/know-no-fear.jpg",
         published_date: "2019-02-26",
+        created_at: "2026-01-01",
+        date_purchased: "2026-01-02",
+        completed: false,
       },
     },
   },
@@ -28,7 +31,7 @@ const emptyMock = {
 };
 
 function Harness() {
-  const { book, loading, error } = useBookOfTheDay();
+  const { book, owned, loading, error } = useBookOfTheDay();
 
   return (
     <div>
@@ -39,6 +42,8 @@ function Harness() {
       <span className="author">{book?.authors ?? "none"}</span>
       <span className="published">{book?.publishedDate ?? "none"}</span>
       <span className="thumbnail">{book?.thumbnailUrl ?? "none"}</span>
+      <span className="purchased">{owned?.datePurchased ?? "none"}</span>
+      <span className="completed">{String(owned?.completed ?? "none")}</span>
     </div>
   );
 }
@@ -100,6 +105,8 @@ describe("useBookOfTheDay", () => {
     expect(text(".author")).toBe("Dan Abnett");
     expect(text(".published")).toBe("2019-02-26");
     expect(text(".thumbnail")).toBe("https://covers.example/know-no-fear.jpg");
+    expect(text(".purchased")).toBe("2026-01-02");
+    expect(text(".completed")).toBe("false");
   });
 
   it("returns a null book when nothing is in progress", async () => {
@@ -108,5 +115,6 @@ describe("useBookOfTheDay", () => {
 
     expect(text(".state")).toBe("ready");
     expect(text(".title")).toBe("none");
+    expect(text(".purchased")).toBe("none");
   });
 });

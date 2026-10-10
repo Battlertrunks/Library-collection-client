@@ -1,5 +1,6 @@
 import useBooksCollected from "../../api/useBooksCollected";
 import useBookOfTheDay from "../../api/useBookOfTheDay";
+import { useBookDetails } from "../../hooks/useBookDetails";
 import ProgressChart from "./ProgressChart";
 import BooksWidget from "./BooksWidget";
 import FeaturedBook from "./FeaturedBook";
@@ -10,6 +11,7 @@ const HOME_PROGRESS_LIMIT: number = 3;
 
 const HomePage = () => {
   const username: string = "BattlerTrunks"; // TODO: Get username from server...
+  const { openBook, bookDetailsModal } = useBookDetails();
 
   // Closest to completion first, with finished books filtered out.
   const {
@@ -25,11 +27,18 @@ const HomePage = () => {
 
   const {
     book: featuredBook,
+    owned: featuredOwned,
     loading: featuredLoading,
     error: featuredError,
   } = useBookOfTheDay();
 
   const progressItems = collectedBooks.slice(0, HOME_PROGRESS_LIMIT);
+
+  function openFeaturedBook() {
+    if (featuredBook) {
+      openBook(featuredBook, featuredOwned);
+    }
+  }
 
   // TODO: Should there be animation effects in this project?
 
@@ -115,7 +124,16 @@ const HomePage = () => {
               key={item.id}
               className="text-left text-lg text-gray-700 dark:text-gray-300 mb-1"
             >
-              <BooksWidget book={item.listing} progress={item.progress} />
+              <BooksWidget
+                book={item.listing}
+                progress={item.progress}
+                onOpen={() =>
+                  openBook(item.listing, {
+                    datePurchased: item.datePurchased,
+                    completed: item.completed,
+                  })
+                }
+              />
             </li>
           ))}
         </ul>
@@ -129,8 +147,11 @@ const HomePage = () => {
           book={featuredBook}
           loading={featuredLoading}
           error={featuredError ?? null}
+          onOpen={openFeaturedBook}
         />
       </section>
+
+      {bookDetailsModal}
     </div>
   );
 };

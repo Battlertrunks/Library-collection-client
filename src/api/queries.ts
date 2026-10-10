@@ -76,7 +76,9 @@ export const GET_BOOKS_COLLECTED = gql(`
 `);
 
 // Deterministic daily pick served by the API; null when no owned book is in
-// progress. No variables: the server decides from the current date.
+// progress. No variables: the server decides from the current date. Listing
+// description/genres are not part of the books_collected contract yet, so the
+// modal falls back gracefully.
 export const GET_BOOK_OF_THE_DAY = gql(`
   query GetBookOfTheDay {
     book_of_the_day {
@@ -85,6 +87,9 @@ export const GET_BOOK_OF_THE_DAY = gql(`
       authors
       thumbnail_url
       published_date
+      created_at
+      date_purchased
+      completed
     }
   }
 `);

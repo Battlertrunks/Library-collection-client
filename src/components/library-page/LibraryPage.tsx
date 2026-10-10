@@ -1,24 +1,18 @@
 import { useEffect, useRef, useState } from "react";
 import type { Options } from "../../types/SelectOptions";
 import type { BookListing } from "../../types/bookListing";
-import type { OwnedBookInfo } from "../../types/collectedBook";
 import type { BookSort } from "../../types/bookSort";
 import useBooks from "../../api/useBooks";
 import useBooksCollected from "../../api/useBooksCollected";
 import useBookCollectionActions from "../../api/useBookCollectionActions";
 import { useDebouncedValue } from "../../hooks/useDebouncedValue";
+import { useBookDetails } from "../../hooks/useBookDetails";
 import CustomSelect from "../action-items/CustomSelect";
-import BookDetails from "../book-details/BookDetails";
 import ConfirmRemoveModal from "./ConfirmRemoveModal";
 import LibraryBookCard from "./LibraryBookCard";
 import EndOfListMessage from "./EndOfListMessage";
 import { useInfiniteScroll } from "./useInfiniteScroll";
 import "./LibraryPage.css";
-
-type SelectedBook = {
-  book: BookListing;
-  owned?: OwnedBookInfo;
-};
 
 /** Milliseconds to wait after the last keystroke before querying the server. */
 const SEARCH_DEBOUNCE_MS = 300;
@@ -32,7 +26,7 @@ const options: Options = [
 ];
 
 function LibraryPage() {
-  const [selectedBook, setSelectedBook] = useState<SelectedBook | null>(null);
+  const { openBook, bookDetailsModal } = useBookDetails();
   const [bookToRemove, setBookToRemove] = useState<BookListing | null>(null);
   const [sortValue, setSortValue] = useState<BookSort>("RECENT");
   const [searchQuery, setSearchQuery] = useState("");
@@ -182,12 +176,9 @@ function LibraryPage() {
               disabled={pendingId === collected.listing.id}
               onRemove={() => setBookToRemove(collected.listing)}
               onOpen={() =>
-                setSelectedBook({
-                  book: collected.listing,
-                  owned: {
-                    datePurchased: collected.datePurchased,
-                    completed: collected.completed,
-                  },
+                openBook(collected.listing, {
+                  datePurchased: collected.datePurchased,
+                  completed: collected.completed,
                 })
               }
             />
@@ -232,7 +223,7 @@ function LibraryPage() {
               book={book}
               disabled={pendingId === book.id}
               onAdd={() => handleAdd(book)}
-              onOpen={() => setSelectedBook({ book })}
+              onOpen={() => openBook(book)}
             />
           ))}
         </ul>
@@ -247,13 +238,7 @@ function LibraryPage() {
 
       {hasAnyBooks && allListsLoaded && <EndOfListMessage />}
 
-      {selectedBook && (
-        <BookDetails
-          book={selectedBook.book}
-          owned={selectedBook.owned}
-          onClose={() => setSelectedBook(null)}
-        />
-      )}
+      {bookDetailsModal}
 
       {bookToRemove && (
         <ConfirmRemoveModal

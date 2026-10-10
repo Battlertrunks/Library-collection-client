@@ -1,14 +1,15 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderToString } from "react-dom/server";
 import HomePage from "./HomePage";
-import type { CollectedBook } from "../../types/collectedBook";
-import type { BookOfTheDay } from "../../types/bookOfTheDay";
+import type { BookListing } from "../../types/bookListing";
+import type { CollectedBook, OwnedBookInfo } from "../../types/collectedBook";
 
 const state = vi.hoisted(() => ({
   collectedBooks: [] as CollectedBook[],
   progressLoading: false,
   progressError: null as Error | null,
-  bookOfTheDay: null as BookOfTheDay | null,
+  featuredBook: null as BookListing | null,
+  featuredOwned: undefined as OwnedBookInfo | undefined,
   featuredLoading: false,
   featuredError: null as Error | null,
   lastOptions: null as null | Record<string, unknown>,
@@ -30,7 +31,8 @@ vi.mock("../../api/useBooksCollected", () => ({
 
 vi.mock("../../api/useBookOfTheDay", () => ({
   default: () => ({
-    book: state.bookOfTheDay,
+    book: state.featuredBook,
+    owned: state.featuredOwned,
     loading: state.featuredLoading,
     error: state.featuredError,
   }),
@@ -64,7 +66,8 @@ describe("HomePage", () => {
     state.collectedBooks = [];
     state.progressLoading = false;
     state.progressError = null;
-    state.bookOfTheDay = null;
+    state.featuredBook = null;
+    state.featuredOwned = undefined;
     state.featuredLoading = false;
     state.featuredError = null;
     state.lastOptions = null;
@@ -155,12 +158,19 @@ describe("HomePage", () => {
   });
 
   it("renders the featured book of the day", () => {
-    state.bookOfTheDay = {
+    state.featuredBook = {
       id: "1",
       title: "The Horus Heresy: Know No Fear",
       authors: "Dan Abnett",
       thumbnailUrl: "",
       publishedDate: "2019-02-26",
+      description: "",
+      genres: "",
+      createdAt: "2026-01-01",
+    };
+    state.featuredOwned = {
+      datePurchased: "2026-01-01",
+      completed: false,
     };
 
     const html = renderToString(<HomePage />);
